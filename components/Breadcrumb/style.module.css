@@ -1,0 +1,27 @@
+/* Breadcrumb container */
+.breadcrumb {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+/* Breadcrumb item */
+.breadcrumbItem {
+    display: inline-block;
+    margin-right: 5px;
+    color: var(--primary-color);
+}
+
+/* Arrow between breadcrumb items */
+.breadcrumbItem:not(:last-child)::after {
+    content: '>';
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+/* Style for the last breadcrumb item (current page or end text) */
+.breadcrumbItem:last-child {
+    font-weight: bold;
+    color: #333; /* Customize the color as needed */
+}

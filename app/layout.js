@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import "tailwindcss/tailwind.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "tailwindcss/tailwind.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import StoreProvider from "./StoreProvider";
 import ToastProvider from "@/components/ToastProvider";
 

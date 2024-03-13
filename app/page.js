@@ -5,7 +5,7 @@ import Link from "next/link";
 import { faEye, faEyeSlash, faPlay } from "@fortawesome/free-solid-svg-icons";
 import Input from "@/components/input";
 import SubmitButton from "@/components/submitbutton";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { handleError } from "@/utils/functions";
 import axios from "axios";
@@ -17,7 +17,15 @@ export default function Home() {
   if (!initialized.current) {
     initialized.current = true;
   }
-  const name = useAppSelector((state) => state);
+  const {access_token , user} = useAppSelector((state) => state.auth);
+  const router  = useRouter()
+
+  useEffect(() => {
+    if (access_token && user) {
+      router.push("/dashboard")
+    }
+  },[access_token, router, user])
+
   const dispatch = useAppDispatch();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +33,9 @@ export default function Home() {
     email: "",
     password: "",
   });
-  const router  = useRouter()
+
+
+
 
   const submitForm = async (event) => {
     event.preventDefault();
@@ -64,7 +74,7 @@ export default function Home() {
             }}
           >
             <div className="h-full flex flex-col justify-center items-center">
-              <Card className=" p-14 bg-opacity-10 bg-gray-100 border-transparent max-w-[60%] min-h-[60%]">
+              <Card className=" p-14 bg-opacity-10 !bg-pink-400 border-transparent max-w-[60%] min-h-[60%]">
                 <CardBody>
                   <h5 className="text-white text-md font-bold mb-4">All Digital</h5>
                   <h1 className="text-white fs-md-1 display-6 font-bold mb-4">
