@@ -3,6 +3,7 @@ import "./globals.css";
 import "tailwindcss/tailwind.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import StoreProvider from "./StoreProvider";
+import ToastProvider from "@/components/ToastProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +16,9 @@ export default function RootLayout({ children }) {
   return (
     <StoreProvider>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          <ToastProvider>{children}</ToastProvider>
+        </body>
       </html>
     </StoreProvider>
   );

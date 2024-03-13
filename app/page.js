@@ -1,36 +1,58 @@
-"use client"
+"use client";
 import { Container, Row, Col, Card, Form, CardBody } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { faEye, faEyeSlash, faPlay } from "@fortawesome/free-solid-svg-icons";
 import Input from "@/components/input";
 import SubmitButton from "@/components/submitbutton";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { handleError } from "@/utils/functions";
+import axios from "axios";
+import apis from "@/constants/apis";
+import { useRouter } from "next/navigation";
+import { setAuth } from "@/lib/auth/slice";
 export default function Home() {
-  const [showPassword , setShowPassword] = useState(false)
-  const [formData,setFormData] = useState({
-    email:"",
-    password:"",
-  })
-
-  const submitForm = async event => {
-    event.preventDefault()
-
-    login({
-        email,
-        password,
-        setErrors,
-        setStatus,
-    })
-}
-  const handleChange = (e) => {
-    const {name , value} = e.target
-    setFormData(prev => ({...prev , [name] : value}))
+  const initialized = useRef(false);
+  if (!initialized.current) {
+    initialized.current = true;
   }
+  const name = useAppSelector((state) => state);
+  const dispatch = useAppDispatch();
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const router  = useRouter()
+
+  const submitForm = async (event) => {
+    event.preventDefault();
+    try {
+      const { data, status } = await axios.post(apis.login, formData);
+      if (status === 200) {
+        dispatch(
+          setAuth({
+            ...data,
+          })
+        );
+        router.push("/dashboard")
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   return (
-    <main >
+    <main>
       <Container fluid className="h-screen">
         <Row className="h-100">
           {/* Left Half Section */}
@@ -84,10 +106,9 @@ export default function Home() {
                                     maxHeight: '100px',
                                 }}
                             /> */}
-              
+
               <Form className="w-full" onSubmit={submitForm}>
                 <Form.Group>
-
                   <Input
                     controlId="email"
                     label="Username or Email"
@@ -98,6 +119,7 @@ export default function Home() {
                     required
                     placeholder="Username or Email"
                     autoFocus
+                    name="email"
                   />
                 </Form.Group>
 
@@ -106,14 +128,20 @@ export default function Home() {
                   <Input
                     controlId="password"
                     label="Password"
-                    type={showPassword? "text" : "password"}
+                    type={showPassword ? "text" : "password"}
                     value={formData.password}
                     className="mt-1 w-full"
                     onChange={handleChange}
                     required
-                    icon={<FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} onClick={() => setShowPassword(prev => !prev)} />}
+                    icon={
+                      <FontAwesomeIcon
+                        icon={showPassword ? faEyeSlash : faEye}
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      />
+                    }
                     placeholder="Password"
                     autoComplete="current-password"
+                    name="password"
                   />
                 </Form.Group>
 
