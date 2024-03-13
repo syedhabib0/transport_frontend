@@ -5,7 +5,7 @@ import InputCustom from '../InputCustom'
 import Label from '../Label'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import axios from '@/lib/axios'
+import axios from 'axios'
 
 const EditVehicleModal = ({ isOpen, onClose, onSubmit, userId, vehicleId }) => {
     const [licensePlate, setLicensePlate] = useState(
