@@ -3,29 +3,85 @@ import Breadcrumb from "@/components/Breadcrumb";
 import InputCustom from "@/components/InputCustom";
 import AppLayout from "@/layouts/AppLayout";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import Select from "react-select";
-
-const breadcrumbItems = [
-  { text: 'Dashboard', link: '/dashboard' },
-  { text: 'Find Truck' },
-]
+import { APIProvider, Map, Marker, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
+import { useLoadScript } from "@react-google-maps/api";
+import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
+import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from "@reach/combobox";
+const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Find Truck" }];
 
 const optionList = [
-  { value: 'available', label: 'Available' },
-  { value: 'in-transit', label: 'In Transit' },
-  { value: 'not-available', label: 'Not Available' },
-  { value: 'blue', label: 'Blue' },
-  { value: 'white', label: 'White' },
-]
+  { value: "available", label: "Available" },
+  { value: "in-transit", label: "In Transit" },
+  { value: "not-available", label: "Not Available" },
+  { value: "blue", label: "Blue" },
+  { value: "white", label: "White" },
+];
 const FindTruck = () => {
-  const [selectedOptions, setSelectedOptions] = useState()
+  const [pickup, setPickup] = useState(null);
+  const [destination, setDestination] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState();
+  const [currentLocation, setCurrentLocation] = useState({ lat: 76, lng: 79 });
+  const getCurrentLocation = () => {
+    const geolocationAPI = navigator.geolocation;
+    if (!geolocationAPI) {
+      toast.error("Geolocation API is not available in your browser!", toastOptions);
+    } else {
+      geolocationAPI.getCurrentPosition(
+        (position) => {
+          const { coords } = position;
+          setCurrentLocation((prev) => ({
+            ...prev,
+            lat: coords.latitude,
+            lng: coords.longitude,
+          }));
+        },
+        (error) => {
+          toast.error("Something went wrong getting your position!", toastOptions);
+        }
+      );
+    }
+  };
 
+  useEffect(() => {
+    const getCurrentLocation = () => {
+      const geolocationAPI = navigator.geolocation;
+      if (!geolocationAPI) {
+        toast.error("Geolocation API is not available in your browser!", toastOptions);
+      } else {
+        geolocationAPI.getCurrentPosition(
+          (position) => {
+            const { coords } = position;
+            setCurrentLocation((prev) => ({
+              ...prev,
+              lat: coords.latitude,
+              lng: coords.longitude,
+            }));
+          },
+          (error) => {
+            toast.error("Something went wrong getting your position!", toastOptions);
+          }
+        );
+      }
+    };
+    getCurrentLocation();
+  }, []);
 
   function handleSelect(data) {
-    setSelectedOptions(data)
-}
+    setSelectedOptions(data);
+  }
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
+    libraries: ["places"],
+  });
+
+  if (!isLoaded) {
+    return <div>Is Loading...</div>;
+  }
+
   return (
     <AppLayout>
       <Head>
@@ -37,12 +93,9 @@ const FindTruck = () => {
           <Row className="content space-x-5">
             <Col className="col-md-7 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
               <h2 className="text-xl font-bold">Origin Points</h2>
-              <InputCustom
-                className="outline-slate-400"
-                float={true}
-                controlId="pickup-location"
-                label="Pickup Location"
-              />
+
+              <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} />
+              <PlacesAutocomplete setSelected={setDestination} label={"Destination"} />
               <InputCustom
                 className="outline-slate-400"
                 controlId="pickup-location"
@@ -115,8 +168,14 @@ const FindTruck = () => {
                 isMulti
               />
             </Col>
-
-            <Col className="flex flex-col pb-40 space-x-1 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color"></Col>
+            <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}>
+              <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
+                <Map defaultCenter={currentLocation} defaultZoom={10}>
+                  {pickup && <Marker position={pickup} label={"Pickup"} />}
+                  {destination && <Marker position={destination} label={"Destination"} />}
+                </Map>
+              </Col>
+            </APIProvider>
           </Row>
         </Container>
       </div>
@@ -125,3 +184,75 @@ const FindTruck = () => {
 };
 
 export default FindTruck;
+
+const PlacesAutocomplete = ({ setSelected, label }) => {
+  const {
+    ready,
+    value,
+    setValue,
+    suggestions: { status, data },
+    clearSuggestions,
+  } = usePlacesAutocomplete();
+
+  const handleSelect = async (address) => {
+    setValue(address);
+    clearSuggestions();
+    const results = await getGeocode({ address });
+    const { lat, lng } = await getLatLng(results[0]);
+    setSelected({ lat, lng });
+  };
+
+  return (
+    <Combobox onSelect={handleSelect}>
+      <label className="rounded-md p-0 flex flex-row border-none focus:border-none focus:ring  focus:ring-opacity-50">
+        {label}
+      </label>
+      <ComboboxInput
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={!ready}
+        className="w-full rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+      />
+      <ComboboxPopover>
+        <ComboboxList>
+          {status === "OK" &&
+            data.map(({ place_id, description }) => <ComboboxOption key={place_id} value={description} />)}
+        </ComboboxList>
+      </ComboboxPopover>
+    </Combobox>
+  );
+};
+
+
+const Directions = () => {
+  const map = useMap()
+  const routesLibrary = useMapsLibrary("routes")
+  const [directionService, setDirectionService] = useState()
+  const [directionRenderer, setDirectionRenderer] = useState()
+  useEffect(() => {
+    if (!map || !routesLibrary) return
+    setDirectionService(new routesLibrary.DirectionsService())
+    setDirectionRenderer(new routesLibrary.DirectionsRenderer({map}))
+  },[map, routesLibrary]) 
+
+  useEffect(() => {
+    if (!directionRenderer || !directionService) return 
+    
+    directionService.route({
+      origin:"Pakka qila Hyderabad",
+      destination:"Fazal masjid latifabad unit 9",
+      travelMode:google.maps.TravelMode.DRIVING,
+      provideRoutesAlternatives:true,
+    }).then(response => {
+      directionRenderer.setDirections(response)
+    })
+
+
+  },[directionRenderer,directionService])
+
+
+
+  return(
+    <></>
+  )
+}
