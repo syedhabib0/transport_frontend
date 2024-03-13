@@ -61,25 +61,16 @@ const AddDriver = () => {
   };
 
   const handleBulkUpload = async (file) => {
-    console.log("Uploading file:", file);
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await axios.post(`api/drivers/create/bulk`, formData);
-      console.log("I am here", response);
-
+      const response = await axios.post(apis.bulkDriverCreate, formData,{headers:{Authorization:`Bearer ${access_token}`}});
       if (response.status === 200) {
-        Formik.resetForm();
-        console.log("Form submitted successfully.");
-      } else {
-        console.error("Form submission failed.");
+        handleCloseModal();
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      console.log("Error response from server:", error.response);
+      handleError(error);
     }
-    // Close the modal after upload
-    handleCloseModal();
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {

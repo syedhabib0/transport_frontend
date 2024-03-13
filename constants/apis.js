@@ -6,7 +6,8 @@ const apis =  {
     drivers:`${baseUrl}/drivers`,
     dashboardStates:`${baseUrl}/dashboard/stats`,
     searchdrivers : `${baseUrl}/drivers/searchDrivers`,
-    driversCreate : `${baseUrl}/drivers/create`
+    driversCreate : `${baseUrl}/drivers/create`,
+    bulkDriverCreate : `${baseUrl}/drivers/create/bulk`,
 }
 
 export default apis
