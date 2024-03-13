@@ -170,7 +170,7 @@ const FindTruck = () => {
             </Col>
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}>
               <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
-                <Map defaultCenter={currentLocation} defaultZoom={10}>
+                <Map defaultCenter={currentLocation} defaultZoom={10} >
                   {pickup && <Marker position={pickup} label={"Pickup"} />}
                   {destination && <Marker position={destination} label={"Destination"} />}
                 </Map>
@@ -229,6 +229,7 @@ const Directions = () => {
   const routesLibrary = useMapsLibrary("routes")
   const [directionService, setDirectionService] = useState()
   const [directionRenderer, setDirectionRenderer] = useState()
+  const [routes, setRoutes] = useState([])
   useEffect(() => {
     if (!map || !routesLibrary) return
     setDirectionService(new routesLibrary.DirectionsService())
@@ -239,13 +240,15 @@ const Directions = () => {
     if (!directionRenderer || !directionService) return 
     
     directionService.route({
-      origin:"Pakka qila Hyderabad",
-      destination:"Fazal masjid latifabad unit 9",
+      origin:"Pakka Qila, Hyderabad, Pakistan",
+      destination:"Fazal Masjid Road, Latifabad Unit No. 9 Mir Fazal Town Latifabad Unit 9 Latifabad, Hyderabad, Pakistan",
       travelMode:google.maps.TravelMode.DRIVING,
       provideRoutesAlternatives:true,
     }).then(response => {
       directionRenderer.setDirections(response)
-    })
+      setRoutes(response.routes)
+      console.log(response.routes);
+    }).catch(err => console.error(err))
 
 
   },[directionRenderer,directionService])
