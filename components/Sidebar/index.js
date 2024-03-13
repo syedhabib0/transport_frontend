@@ -118,7 +118,7 @@ const Sidebar = ({ onToggleSidebar }) => {
               <Nav.Item>
                 <Link
                   href="/dashboard"
-                  className={`me-2 flex ${isActive("/dashboard") ? styles.active : ""}`}
+                  className={`me-2 flex  ${isActive("/dashboard") ? styles.active : ""}`}
                 >
                   <Image src={"/assets/images/home.png"} width={30} height={30} alt="Home icon" />
                 </Link>
@@ -219,11 +219,11 @@ const Sidebar = ({ onToggleSidebar }) => {
             </Nav.Item>
 
             {/* Sidebar Menu Items */}
-            <div className="text-center mx-auto">
+            <div className="text-center mx-auto ">
               <Nav.Item>
                 <Link
                   href="/dashboard"
-                  className={`text-lg me-2 space-x-16 flex ${isActive("/dashboard") ? styles.active : ""}`}
+                  className={`text-lg me-2 !text-white space-x-16 flex ${isActive("/dashboard") ? styles.active : ""}`}
                 >
                   <span className="icon me-4 text-xl">
                     <Image src={"/assets/images/home.png"} width={30} height={30} alt="Home icon" />
@@ -234,7 +234,7 @@ const Sidebar = ({ onToggleSidebar }) => {
               <Nav.Item>
                 <Link
                   href="/find-truck"
-                  className={`text-lg me-2 space-x-16 flex ${isActive("/find-truck") ? styles.active : ""}`}
+                  className={`text-lg me-2 !text-white space-x-16 flex ${isActive("/find-truck") ? styles.active : ""}`}
                 >
                   <span className="icon me-4 text-xl">
                     <Image src={"/assets/images/truck.png"} width={30} height={30} alt="Truck icon" />
@@ -245,7 +245,7 @@ const Sidebar = ({ onToggleSidebar }) => {
               <Nav.Item>
                 <Link
                   href="/track-load"
-                  className={`text-lg me-2 space-x-16 flex ${isActive("/track-load") ? styles.active : ""}`}
+                  className={`text-lg me-2 !text-white space-x-16 flex ${isActive("/track-load") ? styles.active : ""}`}
                 >
                   <span className="icon me-4 text-xl">
                     <Image
@@ -261,7 +261,7 @@ const Sidebar = ({ onToggleSidebar }) => {
               <Nav.Item>
                 <Link
                   href="/load"
-                  className={`text-lg me-2 space-x-16 flex ${isActive("/load") ? styles.active : ""}`}
+                  className={`text-lg me-2 !text-white space-x-16 flex ${isActive("/load") ? styles.active : ""}`}
                 >
                   <span className="icon me-4 text-xl">
                     <Image src={"/assets/images/load.png"} width={30} height={30} alt="Load icon" />
@@ -272,7 +272,7 @@ const Sidebar = ({ onToggleSidebar }) => {
               <Nav.Item>
                 <Link
                   href="/drivers"
-                  className={`text-lg me-2 space-x-16 flex ${isActive("/drivers") ? styles.active : ""}`}
+                  className={`text-lg me-2 !text-white space-x-16 flex ${isActive("/drivers") ? styles.active : ""}`}
                 >
                   <span className="icon me-4 text-xl">
                     <Image src={"/assets/images/drivers.png"} width={30} height={30} alt="Driver icon" />
@@ -283,7 +283,7 @@ const Sidebar = ({ onToggleSidebar }) => {
               <Nav.Item>
                 <a
                   href="#"
-                  className="text-lg mt-5 space-x-16 flex justify-content-between"
+                  className="text-lg mt-5 !text-white space-x-16 flex justify-content-between"
                   onClick={toggleMessageMenu}
                 >
                   <span className="icon me-4 text-xl">
@@ -302,7 +302,7 @@ const Sidebar = ({ onToggleSidebar }) => {
                 {messageMenuOpen && (
                   <Link
                     href="/group-sms"
-                    className={`text-lg ml-14 flex ${isActive("/group-sms") ? styles.active : ""}`}
+                    className={`text-lg ml-14 !text-white flex ${isActive("/group-sms") ? styles.active : ""}`}
                   >
                     Group SMS
                   </Link>
@@ -311,7 +311,7 @@ const Sidebar = ({ onToggleSidebar }) => {
               <Nav.Item>
                 <Link
                   href="/chat"
-                  className={`text-lg me-2 space-x-16 flex ${isActive("/chat") ? styles.active : ""}`}
+                  className={`text-lg me-2 !text-white space-x-16 flex ${isActive("/chat") ? styles.active : ""}`}
                 >
                   <span className="icon me-4 text-xl">
                     <Image src={"/assets/images/chat.png"} width={30} height={30} alt="Chat icon" />

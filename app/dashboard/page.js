@@ -11,9 +11,14 @@ import { faAnglesRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "@/components/Table";
 import { handleError } from "@/utils/functions";
+import apis from "@/constants/apis";
+import { useAppSelector } from "@/lib/hooks";
+import axios from "axios";
 
 const Dashboard = () => {
   const breadcrumbItems = [{ text: "Dashboard" }];
+  const { access_token } = useAppSelector((state) => state.auth);
+
   const [dashboardData, setDashboardData] = useState(null);
   const [totalEarning, setTotalEarning] = useState(0);
   const [driverEarning, setDriverEarning] = useState(0);
@@ -59,9 +64,14 @@ const Dashboard = () => {
     const fetchData = async () => {
       // Fetch total and driver earnings
       try {
-        // const dashboardResponse = await axios.get(`${baseURL}api/dashboard/stats`, {headers: `bearer ${access_token}`})
-        // const loadResponse = await axios.get(`${baseURL}api/loads`,{headers: `bearer ${access_token}`})
-        // console.log(dashboardResponse);
+        const loadResponse = await axios.get(apis.loads, {
+          headers: { Authorization: `bearer ${access_token}` },
+        });
+        const dashboardResponse = await axios.get(apis.dashboardStates, {
+          headers: { Authorization: `bearer ${access_token}` },
+        });
+        console.log(dashboardResponse);
+        console.log(loadResponse);
         // setDashboardData(dashboardResponse)
         // const {
         //     totalLoads,

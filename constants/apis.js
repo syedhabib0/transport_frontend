@@ -4,6 +4,9 @@ const apis =  {
     login: `${baseUrl}/login`,
     loads:`${baseUrl}/loads`,
     drivers:`${baseUrl}/drivers`,
+    dashboardStates:`${baseUrl}/dashboard/stats`,
+    searchdrivers : `${baseUrl}/drivers/searchDrivers`,
+    driversCreate : `${baseUrl}/drivers/create`
 }
 
 export default apis

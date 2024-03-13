@@ -1,4 +1,6 @@
 "use client";
+import { clearAuth } from "@/lib/auth/slice";
+import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Navbar, Nav, NavDropdown, Image } from "react-bootstrap";
@@ -6,7 +8,7 @@ import { FaUser } from "react-icons/fa";
 
 const Header = ({ username, avatarUrl, welcome }) => {
   const router = useRouter();
-
+  const dispatch = useAppDispatch();
   // const [open, setOpen] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -18,7 +20,10 @@ const Header = ({ username, avatarUrl, welcome }) => {
     setShowDropdown(false);
   };
 
-  function logout() {}
+  function logout() {
+    dispatch(clearAuth());
+    router.push("/");
+  }
 
   return (
     <Navbar

@@ -42,6 +42,7 @@ export default function Home() {
     try {
       const { data, status } = await axios.post(apis.login, formData);
       if (status === 200) {
+        console.log(data);
         dispatch(
           setAuth({
             ...data,
