@@ -23,7 +23,7 @@ const FindTruck = () => {
   const [pickup, setPickup] = useState(null);
   const [destination, setDestination] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState();
-  const [currentLocation, setCurrentLocation] = useState({ lat: 76, lng: 79 });
+  const [currentLocation, setCurrentLocation] = useState({ lat: 37.0902, lng: 95.7129 });
   const getCurrentLocation = () => {
     const geolocationAPI = navigator.geolocation;
     if (!geolocationAPI) {
@@ -170,7 +170,7 @@ const FindTruck = () => {
             </Col>
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}>
               <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
-                <Map defaultCenter={currentLocation} defaultZoom={10} >
+                <Map defaultCenter={currentLocation} defaultZoom={10} mapId="9b6408df5f878942">
                   {pickup && <Marker position={pickup} label={"Pickup"} />}
                   {destination && <Marker position={destination} label={"Destination"} />}
                 </Map>
@@ -213,10 +213,10 @@ const PlacesAutocomplete = ({ setSelected, label }) => {
         disabled={!ready}
         className="w-full rounded-md shadow-sm focus:ring focus:ring-opacity-50"
       />
-      <ComboboxPopover>
+      <ComboboxPopover className="bg-white rounded-md p-1 z-10">
         <ComboboxList>
           {status === "OK" &&
-            data.map(({ place_id, description }) => <ComboboxOption key={place_id} value={description} />)}
+            data.map(({ place_id, description }) => <ComboboxOption key={place_id} value={description} className="cursor-pointer" />)}
         </ComboboxList>
       </ComboboxPopover>
     </Combobox>
