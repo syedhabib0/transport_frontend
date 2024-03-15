@@ -18,16 +18,6 @@ const GeneralInformationForm = ({ userId, data }) => {
 
   const id = userId;
 
-  //   const handleFileChange = (event) => {
-  //     const file = event.target.files[0];
-  //     console.log(profileImg)
-  //     // Display a preview of the selected image
-  //     if (file) {
-  //       const previewURL = URL.createObjectURL(file);
-  //       setProfileImg(previewURL);
-  //     }
-  //   };
-
   const formik = useFormik({
     initialValues: {
       user_id: id, // Replace with the actual user ID

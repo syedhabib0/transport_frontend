@@ -3,13 +3,17 @@ import Breadcrumb from "@/components/Breadcrumb";
 import InputCustom from "@/components/InputCustom";
 import AppLayout from "@/layouts/AppLayout";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import Select from "react-select";
 import { APIProvider, Map, Marker, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { useLoadScript } from "@react-google-maps/api";
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from "@reach/combobox";
+import { handleError } from "@/utils/functions";
+import axios from "axios";
+import apis from "@/constants/apis";
+import { useAppSelector } from "@/lib/hooks";
 const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Find Truck" }];
 
 const optionList = [
@@ -20,30 +24,13 @@ const optionList = [
   { value: "white", label: "White" },
 ];
 const FindTruck = () => {
+  const { access_token } = useAppSelector((state) => state.auth);
   const [pickup, setPickup] = useState(null);
-  const [destination, setDestination] = useState(null);
+  const [formData, setFormData] = useState({
+    radius: "300",
+  });
   const [selectedOptions, setSelectedOptions] = useState();
   const [currentLocation, setCurrentLocation] = useState({ lat: 37.0902, lng: 95.7129 });
-  const getCurrentLocation = () => {
-    const geolocationAPI = navigator.geolocation;
-    if (!geolocationAPI) {
-      toast.error("Geolocation API is not available in your browser!", toastOptions);
-    } else {
-      geolocationAPI.getCurrentPosition(
-        (position) => {
-          const { coords } = position;
-          setCurrentLocation((prev) => ({
-            ...prev,
-            lat: coords.latitude,
-            lng: coords.longitude,
-          }));
-        },
-        (error) => {
-          toast.error("Something went wrong getting your position!", toastOptions);
-        }
-      );
-    }
-  };
 
   useEffect(() => {
     const getCurrentLocation = () => {
@@ -78,6 +65,29 @@ const FindTruck = () => {
     libraries: ["places"],
   });
 
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const body = {
+          longitude: pickup.lng,
+          latitude: pickup.lat,
+          radius: formData.radius,
+        };
+        const { data, status } = await axios.post(apis.searchdrivers, body, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+        if (status === 200) {
+          console.log(data);
+        }
+      } catch (error) {
+        handleError(error);
+      }
+    };
+    if (pickup) {
+      getData();
+    }
+  }, [pickup, formData.radius, access_token]);
+
   if (!isLoaded) {
     return <div>Is Loading...</div>;
   }
@@ -95,13 +105,13 @@ const FindTruck = () => {
               <h2 className="text-xl font-bold">Origin Points</h2>
 
               <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} />
-              <PlacesAutocomplete setSelected={setDestination} label={"Destination"} />
+              {/* <PlacesAutocomplete setSelected={setDestination} label={"Destination"} /> */}
               <InputCustom
                 className="outline-slate-400"
                 controlId="pickup-location"
                 label="Distance"
                 float={true}
-                value="300"
+                value={formData.radius}
                 icon={"In Mile(s)"}
               />
               <Form.Group>
@@ -172,7 +182,11 @@ const FindTruck = () => {
               <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
                 <Map defaultCenter={currentLocation} defaultZoom={10} mapId="9b6408df5f878942">
                   {pickup && <Marker position={pickup} label={"Pickup"} />}
-                  {destination && <Marker position={destination} label={"Destination"} />}
+                  {pickup && formData.radius && (
+                    <DrawPickupCircle pickupLocation={pickup} radiusInMiles={parseFloat(formData.radius)} />
+                  )}
+                  
+                  {/* {destination && <Marker position={destination} label={"Destination"} />} */}
                 </Map>
               </Col>
             </APIProvider>
@@ -216,46 +230,91 @@ const PlacesAutocomplete = ({ setSelected, label }) => {
       <ComboboxPopover className="bg-white rounded-md p-1 z-10">
         <ComboboxList>
           {status === "OK" &&
-            data.map(({ place_id, description }) => <ComboboxOption key={place_id} value={description} className="cursor-pointer" />)}
+            data.map(({ place_id, description }) => (
+              <ComboboxOption key={place_id} value={description} className="cursor-pointer" />
+            ))}
         </ComboboxList>
       </ComboboxPopover>
     </Combobox>
   );
 };
 
-
 const Directions = () => {
-  const map = useMap()
-  const routesLibrary = useMapsLibrary("routes")
-  const [directionService, setDirectionService] = useState()
-  const [directionRenderer, setDirectionRenderer] = useState()
-  const [routes, setRoutes] = useState([])
+  const map = useMap();
+  const routesLibrary = useMapsLibrary("routes");
+  const [directionService, setDirectionService] = useState();
+  const [directionRenderer, setDirectionRenderer] = useState();
+  const [routes, setRoutes] = useState([]);
   useEffect(() => {
-    if (!map || !routesLibrary) return
-    setDirectionService(new routesLibrary.DirectionsService())
-    setDirectionRenderer(new routesLibrary.DirectionsRenderer({map}))
-  },[map, routesLibrary]) 
+    if (!map || !routesLibrary) return;
+    setDirectionService(new routesLibrary.DirectionsService());
+    setDirectionRenderer(new routesLibrary.DirectionsRenderer({ map }));
+  }, [map, routesLibrary]);
 
   useEffect(() => {
-    if (!directionRenderer || !directionService) return 
-    
-    directionService.route({
-      origin:"Pakka Qila, Hyderabad, Pakistan",
-      destination:"Fazal Masjid Road, Latifabad Unit No. 9 Mir Fazal Town Latifabad Unit 9 Latifabad, Hyderabad, Pakistan",
-      travelMode:google.maps.TravelMode.DRIVING,
-      provideRoutesAlternatives:true,
-    }).then(response => {
-      directionRenderer.setDirections(response)
-      setRoutes(response.routes)
-      console.log(response.routes);
-    }).catch(err => console.error(err))
+    if (!directionRenderer || !directionService) return;
 
+    directionService
+      .route({
+        origin: "Pakka Qila, Hyderabad, Pakistan",
+        destination:
+          "Fazal Masjid Road, Latifabad Unit No. 9 Mir Fazal Town Latifabad Unit 9 Latifabad, Hyderabad, Pakistan",
+        travelMode: google.maps.TravelMode.DRIVING,
+        provideRoutesAlternatives: true,
+      })
+      .then((response) => {
+        directionRenderer.setDirections(response);
+        setRoutes(response.routes);
+        console.log(response.routes);
+      })
+      .catch((err) => console.error(err));
+  }, [directionRenderer, directionService]);
 
-  },[directionRenderer,directionService])
+  return <></>;
+};
 
+const DrawPickupCircle = ({ pickupLocation, radiusInMiles }) => {
+  const map = useMap();
+  const circleRef = useRef(null);
 
+  useEffect(() => {
+    if (!map || !pickupLocation) return;
 
-  return(
-    <></>
-  )
-}
+    const drawCircle = (map, center, radiusInMiles) => {
+      const milesToMeters = 1609.34; // 1 mile = 1609.34 meters
+      const radiusInMeters = radiusInMiles * milesToMeters;
+
+      const circleOptions = {
+        strokeColor: "#ff0909",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#ff090966",
+        fillOpacity: 0.1,
+        map,
+        center,
+        radius: radiusInMeters,
+      };
+
+      // Remove previous circle if exists
+      if (circleRef.current) {
+        circleRef.current.setMap(null);
+      }
+
+      // Draw new circle
+      const circle = new google.maps.Circle(circleOptions);
+      circleRef.current = circle;
+    };
+
+    drawCircle(map, pickupLocation, radiusInMiles);
+
+    // Cleanup function
+    return () => {
+      // Remove circle when component unmounts
+      if (circleRef.current) {
+        circleRef.current.setMap(null);
+      }
+    };
+  }, [map, pickupLocation, radiusInMiles]);
+
+  return null;
+};
