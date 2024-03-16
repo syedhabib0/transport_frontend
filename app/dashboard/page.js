@@ -64,14 +64,14 @@ const Dashboard = () => {
     const fetchData = async () => {
       // Fetch total and driver earnings
       try {
-        const loadResponse = await axios.get(apis.loads, {
-          headers: { Authorization: `bearer ${access_token}` },
-        });
-        const dashboardResponse = await axios.get(apis.dashboardStates, {
-          headers: { Authorization: `bearer ${access_token}` },
-        });
-        console.log(dashboardResponse);
-        console.log(loadResponse);
+        // const loadResponse = await axios.get(apis.loads, {
+        //   headers: { Authorization: `Bearer ${access_token}` },
+        // });
+        // const dashboardResponse = await axios.get(apis.dashboardStates, {
+        //   headers: { Authorization: `Bearer ${access_token}` },
+        // });
+        // console.log(dashboardResponse);
+        // console.log(loadResponse);
         // setDashboardData(dashboardResponse)
         // const {
         //     totalLoads,
@@ -95,7 +95,7 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [access_token]);
 
   return (
     <>

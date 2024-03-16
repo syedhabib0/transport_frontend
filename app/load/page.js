@@ -23,9 +23,12 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Table from '@/components/Table'
 import apis from '@/constants/apis'
+import { useAppSelector } from '@/lib/hooks'
 // import Table from '@/components/Table'
 
 const Load = () => {
+    const { access_token } = useAppSelector(state => state.auth)
+
     const breadcrumbItems = [
         { text: 'Dashboard', link: '/dashboard' },
         { text: 'Load' },
@@ -77,7 +80,7 @@ const Load = () => {
         const fetchData = async () => {
             try {
                 // Fetch total and driver earnings
-                const loadResponse = await axios.get(apis.loads)
+                const loadResponse = await axios.get(apis.loads, {headers:{Authorization:`Bearer ${access_token}`}})
                 setLoads(loadResponse.data)
                 setCurrentPage(loadResponse.data.current_page)
                 setTotalPages(loadResponse.data.last_page)
@@ -87,7 +90,7 @@ const Load = () => {
         }
 
         fetchData(currentPage)
-    }, [currentPage])
+    }, [currentPage,access_token])
 
     const handlePageChange = page => {
         // Set the new currentPage when a pagination item is clicked

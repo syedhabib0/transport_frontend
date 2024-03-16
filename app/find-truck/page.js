@@ -6,14 +6,18 @@ import Head from "next/head";
 import { useEffect, useState, useRef } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import Select from "react-select";
-import { APIProvider, Map, Marker, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import { useLoadScript } from "@react-google-maps/api";
-import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
-import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from "@reach/combobox";
+
 import { handleError } from "@/utils/functions";
 import axios from "axios";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
+import { trucksFeatures } from "@/constants/data";
+import SubmitButton from "@/components/submitbutton";
+import DrawPickupCircle from "@/components/PickupCircle";
+import PlacesAutocomplete from "@/components/PlacesAutoComplete";
+import DriverCard from "@/components/DriverCard";
 const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Find Truck" }];
 
 const optionList = [
@@ -25,12 +29,24 @@ const optionList = [
 ];
 const FindTruck = () => {
   const { access_token } = useAppSelector((state) => state.auth);
+  const [truckTypes, setTruckTypes] = useState({});
   const [pickup, setPickup] = useState(null);
   const [formData, setFormData] = useState({
     radius: "300",
+    lift_gate: "0",
+    hazmat: "0",
+    icc_bar: "0",
+    tsa: "0",
+    twic: "0",
+    pallet_jack: "0",
+    true_dock_high: "0",
+    tanker_endorsement: "0",
+    truck_type: "",
   });
-  const [selectedOptions, setSelectedOptions] = useState();
+  const [selectedOptions, setSelectedOptions] = useState([]);
   const [currentLocation, setCurrentLocation] = useState({ lat: 37.0902, lng: 95.7129 });
+  const [active, setActive] = useState(false);
+  const [drivers, setDrivers] = useState([]);
 
   useEffect(() => {
     const getCurrentLocation = () => {
@@ -53,8 +69,22 @@ const FindTruck = () => {
         );
       }
     };
+
+    const getData = async () => {
+      try {
+        const { data, status } = await axios.get(apis.getTruckTypes, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+        if (status === 200) {
+          setTruckTypes(data.data);
+        }
+      } catch (error) {
+        handleError(error);
+      }
+    };
+    getData();
     getCurrentLocation();
-  }, []);
+  }, [access_token]);
 
   function handleSelect(data) {
     setSelectedOptions(data);
@@ -65,28 +95,39 @@ const FindTruck = () => {
     libraries: ["places"],
   });
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const body = {
-          longitude: pickup.lng,
-          latitude: pickup.lat,
-          radius: formData.radius,
-        };
-        const { data, status } = await axios.post(apis.searchdrivers, body, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-        if (status === 200) {
-          console.log(data);
-        }
-      } catch (error) {
-        handleError(error);
-      }
-    };
-    if (pickup) {
-      getData();
+  const handleChange = (e) => {
+    const { value, name, type, checked } = e.target;
+    console.log(value, name, type, checked);
+    if (type === "checkbox") {
+      setFormData((prev) => ({ ...prev, [name]: checked ? "1" : "0" }));
+    } else if (type === "text") {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    } else if (type === "select-one") {
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
-  }, [pickup, formData.radius, access_token]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const body = {
+        ...formData,
+        latitude: pickup.lat,
+        longitude: pickup.lng,
+        driver_status: selectedOptions.map((item) => item.value),
+      };
+
+      const { data, status } = await axios.post(apis.searchdrivers, body, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+      if (status === 200) {
+        setDrivers(data.data);
+        setActive((prev) => !prev);
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  };
 
   if (!isLoaded) {
     return <div>Is Loading...</div>;
@@ -101,92 +142,96 @@ const FindTruck = () => {
         <Breadcrumb items={breadcrumbItems} />
         <Container className="">
           <Row className="content space-x-5">
-            <Col className="col-md-7 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
-              <h2 className="text-xl font-bold">Origin Points</h2>
+            {!active ? (
+              <Col className="col-md-7 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
+                <h2 className="text-xl font-bold">Origin Points</h2>
 
-              <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} />
-              {/* <PlacesAutocomplete setSelected={setDestination} label={"Destination"} /> */}
-              <InputCustom
-                className="outline-slate-400"
-                controlId="pickup-location"
-                label="Distance"
-                float={true}
-                value={formData.radius}
-                icon={"In Mile(s)"}
-              />
-              <Form.Group>
+                <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} />
                 <InputCustom
-                  isCheck={true}
-                  label="Measure Driver Accurate Route"
-                  className=" border-slate-400"
+                  className="outline-slate-400"
+                  controlId="pickup-location"
+                  label="Distance"
+                  float={true}
+                  value={formData.radius}
+                  icon={"In Mile(s)"}
+                  onChange={handleChange}
+                  name="radius"
                 />
-              </Form.Group>
-
-              <Form.Group className="flex flex-row space-x-5">
-                <h2 className="text-xl font-bold">Truck Features</h2>
-                <Form.Select className="w-50">
-                  <option value="find truck" key="0" selected disabled>
+                <Form.Group className="flex flex-row space-x-5">
+                  <h2 className="text-xl font-bold">Truck Features</h2>
+                  <select
+                    className="w-50"
+                    onChange={handleChange}
+                    name="truck_type"
+                    value={formData.truck_type}
+                  >
+                    <option value="find truck" key="0" selected disabled>
+                      Find Truck
+                    </option>
+                    {Object.keys(truckTypes).map((key) => (
+                      <option key={key} value={key}>
+                        {truckTypes[key]}
+                      </option>
+                    ))}
+                  </select>
+                </Form.Group>
+                <div className="flex flex-row flex-wrap space-x-5 space-y-3">
+                  {Object.keys(trucksFeatures).map((item) => (
+                    <Form.Group key={item}>
+                      <InputCustom
+                        isCheck={true}
+                        label={item.replaceAll("_", " ").toUpperCase()}
+                        className=" me-3 border-slate-400"
+                        name={item}
+                        onChange={handleChange}
+                      />
+                    </Form.Group>
+                  ))}
+                </div>
+                <h2 className="text-xl font-bold">Availability Info</h2>
+                <Select
+                  options={optionList}
+                  placeholder="Choose Availability"
+                  value={selectedOptions}
+                  onChange={handleSelect}
+                  isSearchable={true}
+                  isMulti
+                />
+                <div className="my-2">
+                  <SubmitButton type="button" className={"bg-gradients"} onClick={handleSubmit}>
                     Find Truck
-                  </option>
-                  <option value="Large" key="1">
-                    Large
-                  </option>
-                  <option value="Medium" key="2">
-                    Medium
-                  </option>
-                  <option value="Small" key="3">
-                    Small
-                  </option>
-                </Form.Select>
-              </Form.Group>
-              <div className="flex flex-row flex-wrap space-x-5 space-y-3">
-                <Form.Group className="pt-3">
-                  <InputCustom isCheck={true} label="Van Modified" className=" me-3 border-slate-400" />
-                </Form.Group>
-                <Form.Group>
-                  <InputCustom isCheck={true} label="Lift Gate" className=" me-3 border-slate-400" />
-                </Form.Group>
-                <Form.Group>
-                  <InputCustom isCheck={true} label="Hazmat" className=" me-3 border-slate-400" />
-                </Form.Group>
-                <Form.Group>
-                  <InputCustom isCheck={true} label="Airride" className=" me-3 border-slate-400" />
-                </Form.Group>
-                <Form.Group>
-                  <InputCustom isCheck={true} label="TSA" className=" me-3 border-slate-400" />
-                </Form.Group>
-                <Form.Group>
-                  <InputCustom isCheck={true} label="TWIC" className=" me-3 border-slate-400" />
-                </Form.Group>
-                <Form.Group>
-                  <InputCustom isCheck={true} label="Pallet Jack" className=" me-3 border-slate-400" />
-                </Form.Group>
-                <Form.Group>
-                  <InputCustom isCheck={true} label="Truck Dock High" className=" me-3 border-slate-400" />
-                </Form.Group>
-                <Form.Group>
-                  <InputCustom isCheck={true} label="Tanker Endorsement" className=" me-3 border-slate-400" />
-                </Form.Group>
-              </div>
-              <h2 className="text-xl font-bold">Availability Info</h2>
-              <Select
-                options={optionList}
-                placeholder="Choose Availability"
-                value={selectedOptions}
-                onChange={handleSelect}
-                isSearchable={true}
-                isMulti
-              />
-            </Col>
+                  </SubmitButton>
+                </div>
+              </Col>
+            ) : (
+              <Col className="col-md-7 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
+                <h2 className="text-xl font-bold">{drivers.length} Drivers Found</h2>
+                <div className="max-h-[800px] min-h-[800px] overflow-auto">
+                  {drivers.length > 0 ? (
+                    drivers.map((item) => <DriverCard key={item.driver_id} data={item} />)
+                  ) : (
+                    <div className="h-full flex justify-center items-center flex-col">
+                      <p>Oopss No Driver Found !!!</p>
+                      <SubmitButton type="button" className={"bg-gradients w-max"} onClick={() => setActive(false)}>
+                        Find Truck
+                      </SubmitButton>
+                    </div>
+                  )}
+                </div>
+              </Col>
+            )}
+
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}>
               <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
-                <Map defaultCenter={currentLocation} defaultZoom={10} mapId="9b6408df5f878942">
+                <Map
+                  defaultCenter={currentLocation}
+                  defaultZoom={6}
+                  mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID}
+                >
                   {pickup && <Marker position={pickup} label={"Pickup"} />}
                   {pickup && formData.radius && (
                     <DrawPickupCircle pickupLocation={pickup} radiusInMiles={parseFloat(formData.radius)} />
                   )}
-                  
-                  {/* {destination && <Marker position={destination} label={"Destination"} />} */}
                 </Map>
               </Col>
             </APIProvider>
@@ -198,123 +243,3 @@ const FindTruck = () => {
 };
 
 export default FindTruck;
-
-const PlacesAutocomplete = ({ setSelected, label }) => {
-  const {
-    ready,
-    value,
-    setValue,
-    suggestions: { status, data },
-    clearSuggestions,
-  } = usePlacesAutocomplete();
-
-  const handleSelect = async (address) => {
-    setValue(address);
-    clearSuggestions();
-    const results = await getGeocode({ address });
-    const { lat, lng } = await getLatLng(results[0]);
-    setSelected({ lat, lng });
-  };
-
-  return (
-    <Combobox onSelect={handleSelect}>
-      <label className="rounded-md p-0 flex flex-row border-none focus:border-none focus:ring  focus:ring-opacity-50">
-        {label}
-      </label>
-      <ComboboxInput
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        disabled={!ready}
-        className="w-full rounded-md shadow-sm focus:ring focus:ring-opacity-50"
-      />
-      <ComboboxPopover className="bg-white rounded-md p-1 z-10">
-        <ComboboxList>
-          {status === "OK" &&
-            data.map(({ place_id, description }) => (
-              <ComboboxOption key={place_id} value={description} className="cursor-pointer" />
-            ))}
-        </ComboboxList>
-      </ComboboxPopover>
-    </Combobox>
-  );
-};
-
-const Directions = () => {
-  const map = useMap();
-  const routesLibrary = useMapsLibrary("routes");
-  const [directionService, setDirectionService] = useState();
-  const [directionRenderer, setDirectionRenderer] = useState();
-  const [routes, setRoutes] = useState([]);
-  useEffect(() => {
-    if (!map || !routesLibrary) return;
-    setDirectionService(new routesLibrary.DirectionsService());
-    setDirectionRenderer(new routesLibrary.DirectionsRenderer({ map }));
-  }, [map, routesLibrary]);
-
-  useEffect(() => {
-    if (!directionRenderer || !directionService) return;
-
-    directionService
-      .route({
-        origin: "Pakka Qila, Hyderabad, Pakistan",
-        destination:
-          "Fazal Masjid Road, Latifabad Unit No. 9 Mir Fazal Town Latifabad Unit 9 Latifabad, Hyderabad, Pakistan",
-        travelMode: google.maps.TravelMode.DRIVING,
-        provideRoutesAlternatives: true,
-      })
-      .then((response) => {
-        directionRenderer.setDirections(response);
-        setRoutes(response.routes);
-        console.log(response.routes);
-      })
-      .catch((err) => console.error(err));
-  }, [directionRenderer, directionService]);
-
-  return <></>;
-};
-
-const DrawPickupCircle = ({ pickupLocation, radiusInMiles }) => {
-  const map = useMap();
-  const circleRef = useRef(null);
-
-  useEffect(() => {
-    if (!map || !pickupLocation) return;
-
-    const drawCircle = (map, center, radiusInMiles) => {
-      const milesToMeters = 1609.34; // 1 mile = 1609.34 meters
-      const radiusInMeters = radiusInMiles * milesToMeters;
-
-      const circleOptions = {
-        strokeColor: "#ff0909",
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: "#ff090966",
-        fillOpacity: 0.1,
-        map,
-        center,
-        radius: radiusInMeters,
-      };
-
-      // Remove previous circle if exists
-      if (circleRef.current) {
-        circleRef.current.setMap(null);
-      }
-
-      // Draw new circle
-      const circle = new google.maps.Circle(circleOptions);
-      circleRef.current = circle;
-    };
-
-    drawCircle(map, pickupLocation, radiusInMiles);
-
-    // Cleanup function
-    return () => {
-      // Remove circle when component unmounts
-      if (circleRef.current) {
-        circleRef.current.setMap(null);
-      }
-    };
-  }, [map, pickupLocation, radiusInMiles]);
-
-  return null;
-};

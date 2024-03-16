@@ -5,10 +5,11 @@ const apis =  {
     loads:`${baseUrl}/loads`,
     drivers:`${baseUrl}/drivers`,
     dashboardStates:`${baseUrl}/dashboard/stats`,
-    searchdrivers : `${baseUrl}/drivers/searchDrivers`,
+    searchdrivers : `${baseUrl}/drivers/search-driver-locations`,
     driversCreate : `${baseUrl}/drivers/create`,
     bulkDriverCreate : `${baseUrl}/drivers/create/bulk`,
-    driversLocations:`${baseUrl}/drivers/search-driver-locations`
+    driversLocations:`${baseUrl}/drivers/search-driver-locations`,
+    getTruckTypes: `${baseUrl}/truck/get-truck-types`
 }
 
 export default apis

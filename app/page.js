@@ -12,19 +12,20 @@ import axios from "axios";
 import apis from "@/constants/apis";
 import { useRouter } from "next/navigation";
 import { setAuth } from "@/lib/auth/slice";
+import ApplicationLogo from "@/components/ApplicationLogo";
 export default function Home() {
   const initialized = useRef(false);
   if (!initialized.current) {
     initialized.current = true;
   }
-  const {access_token , user} = useAppSelector((state) => state.auth);
-  const router  = useRouter()
+  const { access_token, user } = useAppSelector((state) => state.auth);
+  const router = useRouter();
 
   useEffect(() => {
     if (access_token && user) {
-      router.push("/dashboard")
+      router.push("/dashboard");
     }
-  },[access_token, router, user])
+  }, [access_token, router, user]);
 
   const dispatch = useAppDispatch();
 
@@ -33,9 +34,6 @@ export default function Home() {
     email: "",
     password: "",
   });
-
-
-
 
   const submitForm = async (event) => {
     event.preventDefault();
@@ -48,7 +46,7 @@ export default function Home() {
             ...data,
           })
         );
-        router.push("/dashboard")
+        router.push("/dashboard");
       } else {
         throw new Error(data.message);
       }
@@ -109,14 +107,14 @@ export default function Home() {
 
             {/* Middle Container */}
             <div className="flex flex-col items-center w-3/4 m-auto">
-              {/* <ApplicationLogo
-                                logo="dark"
-                                className="w-28 h-20 fill-current text-gray-500 mb-4"
-                                style={{
-                                    maxWidth: '100px',
-                                    maxHeight: '100px',
-                                }}
-                            /> */}
+              <ApplicationLogo
+                logo="dark"
+                className="w-28 h-20 fill-current text-gray-500 mb-4"
+                style={{
+                  maxWidth: "100px",
+                  maxHeight: "100px",
+                }}
+              />
 
               <Form className="w-full" onSubmit={submitForm}>
                 <Form.Group>
