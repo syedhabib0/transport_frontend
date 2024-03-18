@@ -4,10 +4,24 @@ import React from "react";
 import Button from "../Button";
 import Link from "next/link";
 import Card from "../Card";
-import avatar from '@/public/assets/images/drivers.png'
-import { faBookmark, faMap } from '@fortawesome/free-solid-svg-icons'
+import avatar from "@/public/assets/images/drivers.png";
+import { faBookmark, faMap } from "@fortawesome/free-solid-svg-icons";
+import { handleError } from "@/utils/functions";
+import { insertFirstMessage, messageTypes } from "@/utils/firebase/chat";
+import { useAppSelector } from "@/lib/hooks";
 
-const DriverCard = ({data}) => {
+const DriverCard = ({ data }) => {
+  console.log(data);
+  const { user } = useAppSelector((state) => state.auth);
+  const handleChat = () => {
+    try {
+      const ChatUser = data?.driver?.user;
+      insertFirstMessage(ChatUser, " Hey I Need You!", messageTypes.text, user);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   return (
     <Card className="flex flex-column w-100  p-4">
       <div className="">
@@ -53,7 +67,10 @@ const DriverCard = ({data}) => {
           <Button className="bg-gradients border-gradient border-gradient-color text-white">
             Assign Load
           </Button>
-          <Button  className="bg-light hover:bg-gray-100 text-black border-gradient border-gradient-color">
+          <Button
+            onClick={handleChat}
+            className="bg-light hover:bg-gray-100 text-black border-gradient border-gradient-color"
+          >
             Chat
           </Button>
         </div>
