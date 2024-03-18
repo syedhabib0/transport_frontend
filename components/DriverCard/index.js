@@ -9,14 +9,19 @@ import { faBookmark, faMap } from "@fortawesome/free-solid-svg-icons";
 import { handleError } from "@/utils/functions";
 import { insertFirstMessage, messageTypes } from "@/utils/firebase/chat";
 import { useAppSelector } from "@/lib/hooks";
+import { useRouter } from "next/navigation";
 
 const DriverCard = ({ data }) => {
   console.log(data);
+  const router = useRouter()
   const { user } = useAppSelector((state) => state.auth);
   const handleChat = () => {
     try {
       const ChatUser = data?.driver?.user;
-      insertFirstMessage(ChatUser, " Hey I Need You!", messageTypes.text, user);
+      const isMessageInserted = insertFirstMessage(ChatUser, " Hey I Need You!", messageTypes.text, user);
+      if(isMessageInserted){
+        router.push("/chat")
+      }
     } catch (error) {
       handleError(error);
     }

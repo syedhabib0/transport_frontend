@@ -3,15 +3,14 @@ import {
   collection,
   getDocs,
   addDoc,
-  serverTimestamp,
   query,
-  orderBy,
-  onSnapshot,
   where,
   setDoc,
   doc,
+  getDoc,
 } from "firebase/firestore";
 import app from "@/configs/firebase";
+import { toast } from "react-toastify";
 const firestore = getFirestore(app);
 
 export const messageTypes = {
@@ -22,9 +21,16 @@ export const messageTypes = {
 
 export async function getUsers(id) {
   try {
-    const usersRef = query(collection(firestore, `users`));
-    const querySnapshot = await getDocs(usersRef);
-    const users = querySnapshot.docs.map((doc) => doc.data());
+    const userRef = query(collection(firestore, `users/${id}/my_users`));
+    const userQuerySnapshot = await getDocs(userRef);
+    const usersIds = userQuerySnapshot.docs.map((doc) => doc.id);
+    const usersRef = collection(firestore, "users");
+    let queryRef = query(usersRef, where("id", "in", usersIds));
+    const querySnapshot = await getDocs(queryRef);
+    const users = [];
+    querySnapshot.forEach((doc) => {
+      users.push({ id: doc.id, ...doc.data() });
+    });
     return users;
   } catch (error) {
     throw error;
@@ -44,26 +50,40 @@ export async function CheckChatExists(email, user) {
       return false;
     }
   } catch (error) {
-    console.error("DOC ERROR >>>>>>>>>", error);
     return false;
   }
 }
-
 
 export async function insertFirstMessage(chatUser, message, type, user) {
   try {
     const data = {
       toId: chatUser.id,
       message: message,
-      read: false,
+      read: Date.now(),
       type: type,
       fromId: user.id,
-      sent: true,
+      sent: Date.now(),
     };
-    const userRef = doc(collection(firestore, `users/${user.id}/my_users`), retrievedUser.id);
-    await addDoc(userRef, data);
+
+    const isUserExists = await checkChatExists(chatUser.email, user);
+    if (!isUserExists) {
+      toast.error("User not found");
+      return false;
+    }
+
+    const chatRef = doc(collection(firestore, "chats"), `${user.id}_${chatUser.id}`);
+    const chatDoc = await getDoc(chatRef);
+
+    if (!chatDoc.exists()) {
+      await setDoc(chatRef, {});
+    }
+
+    const messagesRef = collection(firestore, `chats/${user.id}_${chatUser.id}/messages`);
+    await addDoc(messagesRef, data);
+
     return true;
   } catch (error) {
+    console.error("Error inserting first message:", error);
     return false;
   }
 }

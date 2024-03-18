@@ -277,16 +277,6 @@ const Chat = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState([]);
 
-  const getProduct = async () => {
-    try {
-      const req = await fetch("URL");
-      const res = await req.json();
-      setData(res);
-      setFilter(res);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const messages = [
     {
@@ -415,7 +405,7 @@ const Chat = () => {
   const renderMessages = () => {
     let currentDate = null;
 
-    return messages.map((message) => {
+    return messages.map((message,index) => {
       const messageDate = message.timestamp.toDateString();
 
       // Check if the date has changed
@@ -423,7 +413,7 @@ const Chat = () => {
       currentDate = messageDate;
 
       return (
-        <div key={message.id}>
+        <div key={index}>
           {showDateSeparator && (
             <div className="position-relative py-5">
               <hr className={styles.dateSeparator} />
@@ -457,9 +447,7 @@ const Chat = () => {
     });
   };
 
-  useEffect(() => {
-    getProduct();
-  }, []);
+ 
 
   useEffect(() => {
     const result = myData.filter((item) => {
@@ -544,10 +532,10 @@ const Chat = () => {
                 <div className="flex flex-row space-x-2">
                   <BiMessageAltDetail className="fs-1" /> <span> All conversations</span>
                 </div>
-                {users.map((item) => (
+                {users.map((item,index) => (
                   <div
                     className="flex flex-row space-x-2"
-                    key={item.id}
+                    key={index}
                     onClick={() => handleChatClick(item.id)}
                   >
                     <Image src={item.image} width={30} height={30} className="w-12 h-12" alt="" />

@@ -22,7 +22,6 @@ export async function addChatUser(email, user) {
       return false
     }
   } catch (error) {
-    console.error("DOC ERROR >>>>>>>>>", error);
     return false;
   }
 }

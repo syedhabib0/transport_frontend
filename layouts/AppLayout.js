@@ -24,8 +24,7 @@ const AppLayout = ({ children, welcome }) => {
           name:user.first_name + " " + user.last_name,
           push_token : ""
         }
-        const isUserExist = await addChatUser(user.email,userData)
-        console.log(isUserExist);
+        addChatUser(user.email,userData)
       } catch (error) {
         handleError(error)
       }
