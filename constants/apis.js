@@ -13,3 +13,6 @@ const apis =  {
 }
 
 export default apis
+
+
+export const baseimage = "https://api.tmsiws.com/storage"

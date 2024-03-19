@@ -8,6 +8,8 @@ import {
   setDoc,
   doc,
   getDoc,
+  orderBy,
+  onSnapshot,
 } from "firebase/firestore";
 import app from "@/configs/firebase";
 import { toast } from "react-toastify";
@@ -86,4 +88,58 @@ export async function insertFirstMessage(chatUser, message, type, user) {
     console.error("Error inserting first message:", error);
     return false;
   }
+}
+
+export async function getAllMessages(user, chatUser) {
+  try {
+    const messagesRef = query(
+      collection(firestore, `chats/${user.id}_${chatUser.id}/messages`),
+      orderBy("sent", "asc")
+    );
+    const querySnapshot = await getDocs(messagesRef);
+    const messages = querySnapshot.docs.map((doc) => doc.data());
+    return messages;
+  } catch (error) {
+    console.error("Error getting All message:", error);
+    return [];
+  }
+}
+
+export async function insertMessage(chatUser, message, type, user) {
+  try {
+    const data = {
+      toId: chatUser.id,
+      message: message,
+      read: Date.now(),
+      type: type,
+      fromId: user.id,
+      sent: Date.now(),
+    };
+
+    const messagesRef = collection(firestore, `chats/${user.id}_${chatUser.id}/messages`);
+    await addDoc(messagesRef, data);
+
+    return true;
+  } catch (error) {
+    console.error("Error inserting message:", error);
+    return false;
+  }
+}
+
+export function listenForNewMessages(chatUser,user, callback) {
+  if (!chatUser?.id) {
+    return () => {};
+  }
+  const messagesRef = collection(firestore, `chats/${user.id}_${chatUser.id}/messages`);
+
+  const unsubscribe = onSnapshot(messagesRef, (querySnapshot) => {
+    querySnapshot.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        const newMessage = change.doc.data();
+        newMessage.id = change.doc.id;
+        callback(newMessage);
+      }
+    });
+  });
+  return unsubscribe;
 }
