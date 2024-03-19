@@ -44,31 +44,31 @@ const FindTruck = () => {
     truck_type: "",
   });
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [currentLocation, setCurrentLocation] = useState({ lat: 37.0902, lng: 95.7129 });
+  const [currentLocation, setCurrentLocation] = useState({ lat: 37.0902, lng: -95.7129 });
   const [active, setActive] = useState(false);
   const [drivers, setDrivers] = useState([]);
 
   useEffect(() => {
-    const getCurrentLocation = () => {
-      const geolocationAPI = navigator.geolocation;
-      if (!geolocationAPI) {
-        toast.error("Geolocation API is not available in your browser!", toastOptions);
-      } else {
-        geolocationAPI.getCurrentPosition(
-          (position) => {
-            const { coords } = position;
-            setCurrentLocation((prev) => ({
-              ...prev,
-              lat: coords.latitude,
-              lng: coords.longitude,
-            }));
-          },
-          (error) => {
-            toast.error("Something went wrong getting your position!", toastOptions);
-          }
-        );
-      }
-    };
+    // const getCurrentLocation = () => {
+    //   const geolocationAPI = navigator.geolocation;
+    //   if (!geolocationAPI) {
+    //     toast.error("Geolocation API is not available in your browser!", toastOptions);
+    //   } else {
+    //     geolocationAPI.getCurrentPosition(
+    //       (position) => {
+    //         const { coords } = position;
+    //         setCurrentLocation((prev) => ({
+    //           ...prev,
+    //           lat: coords.latitude,
+    //           lng: coords.longitude,
+    //         }));
+    //       },
+    //       (error) => {
+    //         toast.error("Something went wrong getting your position!", toastOptions);
+    //       }
+    //     );
+    //   }
+    // };
 
     const getData = async () => {
       try {
@@ -83,7 +83,7 @@ const FindTruck = () => {
       }
     };
     getData();
-    getCurrentLocation();
+    // getCurrentLocation();
   }, [access_token]);
 
   function handleSelect(data) {
@@ -146,7 +146,7 @@ const FindTruck = () => {
               <Col className="col-md-7 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
                 <h2 className="text-xl font-bold">Origin Points</h2>
 
-                <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} />
+                <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} setCurrentLocation={setCurrentLocation}/>
                 <InputCustom
                   className="outline-slate-400"
                   controlId="pickup-location"
@@ -224,9 +224,10 @@ const FindTruck = () => {
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}>
               <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
                 <Map
-                  defaultCenter={currentLocation}
-                  defaultZoom={6}
+                  center={currentLocation}
+                  defaultZoom={5}
                   mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID}
+                  onBoundsChanged={(data)=> setCurrentLocation(data.detail.center)}
                 >
                   {pickup && <Marker position={pickup} label={"Pickup"} />}
                   {pickup && formData.radius && (

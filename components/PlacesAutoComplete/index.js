@@ -3,7 +3,7 @@
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from "@reach/combobox";
 
-const PlacesAutocomplete = ({ setSelected, label }) => {
+const PlacesAutocomplete = ({ setSelected, label,setCurrentLocation }) => {
   const {
     ready,
     value,
@@ -18,6 +18,7 @@ const PlacesAutocomplete = ({ setSelected, label }) => {
     const results = await getGeocode({ address });
     const { lat, lng } = await getLatLng(results[0]);
     setSelected({ lat, lng });
+    setCurrentLocation({ lat, lng });
   };
 
   return (
