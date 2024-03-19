@@ -109,7 +109,7 @@ export default function Home() {
             <div className="flex flex-col items-center w-3/4 m-auto">
               <ApplicationLogo
                 logo="dark"
-                className="w-28 h-20 fill-current text-gray-500 mb-4"
+                className="w-28 h-20 !fill-current !text-gray-500 mb-4 bg-gray-300"
                 style={{
                   maxWidth: "100px",
                   maxHeight: "100px",
@@ -162,7 +162,7 @@ export default function Home() {
                     Forgot your password?
                   </Link>
 
-                  <SubmitButton className="mt-3 bg-primary">Login Now</SubmitButton>
+                  <SubmitButton className="mt-3 bg-gradients">Login Now</SubmitButton>
                   <div className="text-center italic mt-4">
                     <p>
                       Dont have an account?{" "}
