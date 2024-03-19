@@ -13,8 +13,8 @@ const PlacesAutocomplete = ({ setSelected, label }) => {
   } = usePlacesAutocomplete();
 
   const handleSelect = async (address) => {
-    setValue(address);
     clearSuggestions();
+    setValue(address,false);
     const results = await getGeocode({ address });
     const { lat, lng } = await getLatLng(results[0]);
     setSelected({ lat, lng });
