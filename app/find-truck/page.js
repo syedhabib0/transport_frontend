@@ -6,7 +6,7 @@ import Head from "next/head";
 import { useEffect, useState, useRef } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import Select from "react-select";
-import { APIProvider, Map, Marker, useMap } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, Marker, useMap, AdvancedMarker } from "@vis.gl/react-google-maps";
 import { useLoadScript } from "@react-google-maps/api";
 
 import { handleError } from "@/utils/functions";
@@ -18,14 +18,13 @@ import SubmitButton from "@/components/submitbutton";
 import DrawPickupCircle from "@/components/PickupCircle";
 import PlacesAutocomplete from "@/components/PlacesAutoComplete";
 import DriverCard from "@/components/DriverCard";
+import Truck from "@/components/Truck";
 const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Find Truck" }];
 
 const optionList = [
   { value: "available", label: "Available" },
   { value: "in-transit", label: "In Transit" },
   { value: "not-available", label: "Not Available" },
-  { value: "blue", label: "Blue" },
-  { value: "white", label: "White" },
 ];
 const FindTruck = () => {
   const { access_token } = useAppSelector((state) => state.auth);
@@ -129,6 +128,32 @@ const FindTruck = () => {
     }
   };
 
+  const assignLoad = async (driver) => {
+    try {
+      console.log(driver);
+      const body = {
+        driver: "1",
+        bill_id: "asdf232",
+        pickup: "north Nazimabad",
+        drop_off: "maymar",
+        pickup_date: "2024-03-06",
+        total_fare: "5000",
+        driver_fare: "2500",
+        pickup_latitude: "",
+        pickup_longitude: "",
+        drop_off_latitude: "",
+        drop_off_longitude: "",
+      };
+      // const { data } = await axios.post(
+      //   apis.loads,
+      //   body,
+      //   { headers: { Authorization: `Bearer ${access_token}` } }
+      // );
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   if (!isLoaded) {
     return <div>Is Loading...</div>;
   }
@@ -146,7 +171,11 @@ const FindTruck = () => {
               <Col className="col-md-7 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
                 <h2 className="text-xl font-bold">Origin Points</h2>
 
-                <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} setCurrentLocation={setCurrentLocation}/>
+                <PlacesAutocomplete
+                  setSelected={setPickup}
+                  label={"Pickup"}
+                  setCurrentLocation={setCurrentLocation}
+                />
                 <InputCustom
                   className="outline-slate-400"
                   controlId="pickup-location"
@@ -205,14 +234,23 @@ const FindTruck = () => {
               </Col>
             ) : (
               <Col className="col-md-7 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
-                <h2 className="text-xl font-bold">{drivers.length} Drivers Found</h2>
+                <div className="w-full">
+                  <h2 className="text-xl font-bold">{drivers.length} Drivers Found</h2>
+                  <button type="button" onClick={() => setActive((prev) => !prev)}>
+                    Find Again
+                  </button>
+                </div>
                 <div className="max-h-[800px] min-h-[800px] overflow-auto">
                   {drivers.length > 0 ? (
-                    drivers.map((item) => <DriverCard key={item.driver_id} data={item} />)
+                    drivers.map((item) => <DriverCard key={item.driver_id} data={item} assignLoad={assignLoad} />)
                   ) : (
                     <div className="h-full flex justify-center items-center flex-col">
                       <p>Oopss No Driver Found !!!</p>
-                      <SubmitButton type="button" className={"bg-gradients w-max"} onClick={() => setActive(false)}>
+                      <SubmitButton
+                        type="button"
+                        className={"bg-gradients w-max"}
+                        onClick={() => setActive(false)}
+                      >
                         Find Truck
                       </SubmitButton>
                     </div>
@@ -225,14 +263,23 @@ const FindTruck = () => {
               <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
                 <Map
                   center={currentLocation}
-                  defaultZoom={5}
+                  defaultZoom={1}
                   mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID}
-                  onBoundsChanged={(data)=> setCurrentLocation(data.detail.center)}
+                  onBoundsChanged={(data) => setCurrentLocation(data.detail.center)}
                 >
                   {pickup && <Marker position={pickup} label={"Pickup"} />}
                   {pickup && formData.radius && (
                     <DrawPickupCircle pickupLocation={pickup} radiusInMiles={parseFloat(formData.radius)} />
                   )}
+                  {active &&
+                    drivers.map((item, index) => (
+                      <AdvancedMarker
+                        key={index}
+                        position={{ lat: parseFloat(item.latitude), lng: parseFloat(item.longitude) }}
+                      >
+                        <Truck />
+                      </AdvancedMarker>
+                    ))}
                 </Map>
               </Col>
             </APIProvider>

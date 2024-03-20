@@ -11,16 +11,16 @@ import { insertFirstMessage, messageTypes } from "@/utils/firebase/chat";
 import { useAppSelector } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 
-const DriverCard = ({ data }) => {
+const DriverCard = ({ data, assignLoad }) => {
   console.log(data);
-  const router = useRouter()
+  const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
   const handleChat = () => {
     try {
       const ChatUser = data?.driver?.user;
       const isMessageInserted = insertFirstMessage(ChatUser, " Hey I Need You!", messageTypes.text, user);
-      if(isMessageInserted){
-        router.push("/chat")
+      if (isMessageInserted) {
+        router.push("/chat");
       }
     } catch (error) {
       handleError(error);
@@ -69,10 +69,15 @@ const DriverCard = ({ data }) => {
           </div>
         </div> */}
         <div className="space-x-1 lg:space-x-10 mx-auto text-center">
-          <Button className="bg-gradients border-gradient border-gradient-color text-white">
+          <Button
+            onClick={()=>assignLoad(data)}
+            type="button"
+            className="bg-gradients border-gradient border-gradient-color text-white"
+          >
             Assign Load
           </Button>
           <Button
+            type="button"
             onClick={handleChat}
             className="bg-light hover:bg-gray-100 text-black border-gradient border-gradient-color"
           >
