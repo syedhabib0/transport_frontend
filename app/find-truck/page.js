@@ -21,14 +21,10 @@ import DriverCard from "@/components/DriverCard";
 import Truck from "@/components/Truck";
 const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Find Truck" }];
 
-const optionList = [
-  { value: "available", label: "Available" },
-  { value: "in-transit", label: "In Transit" },
-  { value: "not-available", label: "Not Available" },
-];
 const FindTruck = () => {
   const { access_token } = useAppSelector((state) => state.auth);
   const [truckTypes, setTruckTypes] = useState({});
+  const [driverStatus,setDriverStatus] = useState({})
   const [pickup, setPickup] = useState(null);
   const [formData, setFormData] = useState({
     radius: "300",
@@ -71,11 +67,16 @@ const FindTruck = () => {
 
     const getData = async () => {
       try {
-        const { data, status } = await axios.get(apis.getTruckTypes, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
+        const [{ data: driverStatus,status:driverCode }, { data, status }] = await Promise.all([
+          axios.get(apis.getDriverStatus, { headers: { Authorization: `Bearer ${access_token}` } }),
+          axios.get(apis.getTruckTypes, {headers: { Authorization: `Bearer ${access_token}` },}),
+        ]);
         if (status === 200) {
           setTruckTypes(data.data);
+        }
+        if (driverCode === 200) {
+          const statusData = Object.keys(driverStatus.data).map(key => ({ value: key, label: driverStatus.data[key] }))
+          setDriverStatus(statusData)
         }
       } catch (error) {
         handleError(error);
@@ -96,7 +97,6 @@ const FindTruck = () => {
 
   const handleChange = (e) => {
     const { value, name, type, checked } = e.target;
-    console.log(value, name, type, checked);
     if (type === "checkbox") {
       setFormData((prev) => ({ ...prev, [name]: checked ? "1" : "0" }));
     } else if (type === "text") {
@@ -219,7 +219,7 @@ const FindTruck = () => {
                 </div>
                 <h2 className="text-xl font-bold">Availability Info</h2>
                 <Select
-                  options={optionList}
+                  options={driverStatus}
                   placeholder="Choose Availability"
                   value={selectedOptions}
                   onChange={handleSelect}
@@ -242,7 +242,9 @@ const FindTruck = () => {
                 </div>
                 <div className="max-h-[800px] min-h-[800px] overflow-auto">
                   {drivers.length > 0 ? (
-                    drivers.map((item) => <DriverCard key={item.driver_id} data={item} assignLoad={assignLoad} />)
+                    drivers.map((item) => (
+                      <DriverCard key={item.driver_id} data={item} assignLoad={assignLoad} />
+                    ))
                   ) : (
                     <div className="h-full flex justify-center items-center flex-col">
                       <p>Oopss No Driver Found !!!</p>
@@ -263,7 +265,7 @@ const FindTruck = () => {
               <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
                 <Map
                   center={currentLocation}
-                  defaultZoom={1}
+                  defaultZoom={3}
                   mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID}
                   onBoundsChanged={(data) => setCurrentLocation(data.detail.center)}
                 >
