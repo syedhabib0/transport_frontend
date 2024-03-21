@@ -27,6 +27,7 @@ import DocumentsForm from "./DocumentsForm";
 import TrucksForm from "./TrucksForm";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
+import { handleError } from "@/utils/functions";
 
 const EditDriver = () => {
   const {access_token} = useAppSelector(state => state.auth)
@@ -55,15 +56,15 @@ const EditDriver = () => {
     const fetchDriverData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(`${apis.drivers}/${id}`,{headers:{Authorization:`${access_token}`}});
-        if (response.status === 200) {
-          console.log(response);
+        const {data,status} = await axios.get(`${apis.drivers}/${id}`,{headers:{Authorization:`Bearer ${access_token}`}});
+        if (status === 200) {
+          console.log(data);
+          setData(data)
         }
         //   setUser(response.data.driver);
         //   setHiredBy(response.data.hired_by);
       } catch (error) {
-        console.log("I am running 127 error");
-        console.error("Error fetching driver data:", error);
+        handleError(error)
       } finally {
         setIsLoading(false);
       }
@@ -121,7 +122,7 @@ const EditDriver = () => {
                       </Tab.Pane>
                       <Tab.Pane eventKey="trucks">
                         <div className="trucks">
-                          <TrucksForm userId={id} data={data} />
+                          {/* <TrucksForm userId={id} data={data} /> */}
                         </div>
                       </Tab.Pane>
                       <Tab.Pane eventKey="reminder">
