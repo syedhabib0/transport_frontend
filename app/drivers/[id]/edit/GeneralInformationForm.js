@@ -8,10 +8,14 @@ import Label from "@/components/Label";
 import SubmitButton from "@/components/submitbutton";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { handleError } from "@/utils/functions";
+import { baseUrl } from "@/constants/apis";
+import { useAppSelector } from "@/lib/hooks";
 
 const GeneralInformationForm = ({ userId, data }) => {
+  const {access_token} = useAppSelector(state => state.auth)
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const imageUrl = "/assets/images/default-profile.png";
+  const imageUrl = data.profileData.profile_photo? data.profileData.profile_photo  :  "/assets/images/default-profile.png";
   const [profileImg, setProfileImg] = useState(imageUrl);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertMessage, setAlertMessage] = useState(null);
@@ -50,29 +54,25 @@ const GeneralInformationForm = ({ userId, data }) => {
         const formData = new FormData();
 
         Object.keys(values).forEach((key) => {
-          // if (key === 'profile_picture' && values[key]) {
-          //     formData.append(key, values[key], values[key].name)
-          // } else {
+          if (key === 'profile_picture' && values[key]) {
+              formData.append(key, values[key], values[key].name)
+          } else {
           formData.append(key, values[key]);
-          // }
+          }
         });
-        console.log(formData);
 
-        await axios.post(`/api/drivers/${id}/updateGeneralInformation`, formData, {
+        await axios.post(`${baseUrl}/drivers/${id}/updateGeneralInformation`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization:`Bearer ${access_token}`
           },
         });
-        // Handle success (you may redirect or show a success message)
-        // Handle Success
         setAlertMessage({
           variant: "success",
           message: "Data updated successfully",
         });
       } catch (error) {
-        console.error(error.response.data);
-        // Handle error (show an error message)
-        // Handle error
+        handleError(error)
         setAlertMessage({
           variant: "danger",
           message: "Error updating data",
@@ -83,7 +83,6 @@ const GeneralInformationForm = ({ userId, data }) => {
     },
   });
 
-  console.log("I am running 58");
 
   return (
     <form onSubmit={formik.handleSubmit}>
