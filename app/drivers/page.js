@@ -17,9 +17,12 @@ import UpdateDriverStatusModal from "@/components/Modal/UpdateDriverStatusModal"
 import NewLoadModal from "@/components/Modal/NewLoadModal";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
+import { handleError } from "@/utils/functions";
 
 const Drivers = () => {
   const { access_token } = useAppSelector((state) => state.auth);
+  const [driverStatusOption, setDriverStatusOption] = useState({})
+
   const [drivers, setDrivers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -92,10 +95,6 @@ const Drivers = () => {
   };
 
   const handleUpdateStatus = (driverId, status) => {
-    // Make an API call to your Laravel backend to update the driver's status
-    // You can use Axios or any other library for making HTTP requests
-
-    // Example using Axios
     axios
       .post(`/api/drivers/updateDriverStatus/${driverId}`, { status })
       .then((response) => {
@@ -130,18 +129,18 @@ const Drivers = () => {
 
   const fetchDrivers = async () => {
     try {
-      const response = await axios.get(apis.drivers, {
-        headers: { Authorization: `bearer ${access_token}` },
+      const {data, status} = await axios.get(apis.drivers, {
+        headers: { Authorization: `Bearer ${access_token}` },
       });
-      console.log(response);
-
-      // Set the retrieved drivers in the state
-      setDrivers(response.data.drivers);
-      setCurrentPage(response.data.current_page);
-      setTotalPages(response.data.last_page);
-      setDriverStatus(drivers.driver && drivers.driver.status ? drivers.driver.status : "Not Available");
+      if (status === 200) {
+        setDrivers(data.data.drivers);
+        setCurrentPage(data.data.current_page);
+        setTotalPages(data.data.last_page);
+      }
+      
+      // setDriverStatus(drivers.driver && drivers.driver.status ? drivers.driver.status : "Not Available");
     } catch (error) {
-      console.error("Error fetching drivers:", error);
+      handleError(error)
     }
   };
 
@@ -149,6 +148,20 @@ const Drivers = () => {
     fetchDrivers(currentPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
+
+  useEffect(() => {
+    const getDriverStatus = async () => {
+      try {
+        const {data,status} = await axios.get(apis.getDriverStatus,{headers:{Authorization:`Bearer ${access_token}`}})
+        if (status === 200) {
+          setDriverStatusOption(data.data)
+        }
+      } catch (error) {
+        handleError(error)   
+      }
+    }
+    getDriverStatus()
+  }, [access_token])
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -212,12 +225,9 @@ const Drivers = () => {
                         onChange={(e) => handleFilterChange("status", e.target.value)}
                       >
                         <option value="">Select Status</option>
-                        <option value="available">Available</option>
-                        <option value="not available">Not Available</option>
-                        <option value="will be available">Will be available</option>
-                        <option value="under our load">Under Our Load</option>
-                        <option value="under our bid">Under Our Bid</option>
-                        <option value="suspended">Suspended</option>
+                        {Object.keys(driverStatusOption).map(key => (
+                           <option value={key} key={key}>{driverStatusOption[key]}</option>
+                        ))}
                       </Form.Select>
                     </FormGroup>
                   </Col>
@@ -282,14 +292,13 @@ const Drivers = () => {
                           <Image
                             src={
                               driver.profile && driver.profile.profile_photo
-                                ? `${backendUrl}/${driver.profile.profile_photo}`
+                                ? `${driver.profile.profile_photo}`
                                 : "/assets/images/default-profile.png"
                             }
                             width={30}
                             height={30}
                             alt={driver.first_name}
                             className="avatar w-10 h-10 rounded-full"
-                            // onError={(e)=> e.target.src = "/assets/images/default-profile.png"}
                           />
                         </td>
                         <td>
@@ -317,18 +326,11 @@ const Drivers = () => {
                               }}
                               id="dropdown-basic"
                             >
-                              {/* Three dots for the actions menu */}
                               ...
                             </Dropdown.Toggle>
-
                             <Dropdown.Menu>
-                              {/* View option */}
                               <Dropdown.Item onClick={() => handleView(driver.id)}>View</Dropdown.Item>
-
-                              {/* Edit option */}
                               <Dropdown.Item onClick={() => handleEdit(driver.id)}>Edit</Dropdown.Item>
-
-                              {/* Delete option */}
                               <Dropdown.Item onClick={() => handleDelete(driver.id)}>Delete</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
@@ -344,7 +346,6 @@ const Drivers = () => {
                   )}
                 </tbody>
               </Table>
-              {/* Modal component */}
               <UpdateDriverStatusModal
                 show={showModal}
                 handleClose={handleCloseModal}
