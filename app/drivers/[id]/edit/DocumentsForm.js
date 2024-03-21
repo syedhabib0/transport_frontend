@@ -13,7 +13,6 @@ import { useAppSelector } from "@/lib/hooks";
 import { baseUrl } from "@/constants/apis";
 
 const DocumentsForm = ({ userId, data }) => {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const lFrontUrl = data.driverData.license_details
     ? `${data.driverData.license_details.license_photo_front}`
     : "/assets/images/placeholder.jpg";

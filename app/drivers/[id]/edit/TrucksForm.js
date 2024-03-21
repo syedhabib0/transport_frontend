@@ -6,8 +6,18 @@ import { faFileEdit } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
 import { Alert, Col, Row } from 'react-bootstrap'
+import { baseUrl } from '@/constants/apis'
+import { useAppDispatch, useAppSelector } from '@/lib/hooks'
+import { fetchTruckTypes } from '@/lib/truckTypes/slice'
+import { fetchDriverStatus } from '@/lib/driverStatus/slice'
 
 const TrucksForm = ({ userId, data }) => {
+    const {access_token} = useAppSelector(state => state.auth)
+    const {truckTypes} = useAppSelector(state => state.truckType)
+    const {driverStatus} = useAppSelector(state => state.driverStatus)
+
+    const dispatch =  useAppDispatch()
+
     const [isAddModalOpen, setAddModalOpen] = useState(false)
     const [isEditModalOpen, setEditModalOpen] = useState(false)
     const [alertMessage, setAlertMessage] = useState(null)
@@ -20,7 +30,7 @@ const TrucksForm = ({ userId, data }) => {
         setEditModalOpen(true)
     }
 
-    const handleAddSubmit = async values => {
+    const handleAddSubmit = async (values) => {
         // Handle form submission here
         console.log('I am values: ', values)
         try {
@@ -37,25 +47,22 @@ const TrucksForm = ({ userId, data }) => {
             console.log(formData)
 
             const response = await axios.post(
-                `/api/drivers/${userId}/createTrucks`,
+                `${baseUrl}/drivers/${userId}/createTrucks`,
                 formData,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
+                        Authorization:`Bearer ${access_token}`
                     },
                 },
             )
             console.log(response)
-            // Handle success (you may redirect or show a success message)
-            // Handle Success
             setAlertMessage({
                 variant: 'success',
                 message: 'Data updated successfully',
             })
         } catch (error) {
             console.error(error.response.data)
-            // Handle error (show an error message)
-            // Handle error
             setAlertMessage({
                 variant: 'danger',
                 message: 'Error updating data',
@@ -80,11 +87,12 @@ const TrucksForm = ({ userId, data }) => {
             console.log(formData)
 
             const response = await axios.post(
-                `/api/drivers/${userId}/updateTrucks/${vehicleId}`,
+                `${baseUrl}/drivers/${userId}/updateTrucks/${vehicleId}`,
                 formData,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
+                        Authorization:`Bearer ${access_token}`
                     },
                 },
             )
@@ -119,9 +127,9 @@ const TrucksForm = ({ userId, data }) => {
     useEffect(() => {
         const fetchVehicleData = async () => {
             try {
-                console.log('Testing')
                 const response = await axios.get(
-                    `/api/drivers/${userId}/getVehicles`,
+                    `${baseUrl}/drivers/${userId}/getVehicles`,
+                    {headers:{Authorization:`Bearer ${access_token}`}}
                 )
                 console.log('69: ', response)
 
@@ -136,7 +144,14 @@ const TrucksForm = ({ userId, data }) => {
         }
 
         fetchVehicleData()
-    }, [alertMessage])
+    }, [userId,access_token])
+
+    useEffect(() => {
+        dispatch(fetchTruckTypes())
+        dispatch(fetchDriverStatus())
+    },[dispatch])
+
+
 
     return (
         <Row>
@@ -155,18 +170,18 @@ const TrucksForm = ({ userId, data }) => {
                         <div key={key} className="space-y-5">
                             <div>
                                 <h2 className="text-xl font-bold">
-                                    ({vehicle.unit_number})
+                                    ({vehicle?.unit_number})
                                 </h2>
                                 <ul>
                                     <li>
                                         Dimensions:{' '}
-                                        {vehicle.other_details.length} X{' '}
-                                        {vehicle.other_details.height} X{' '}
-                                        {vehicle.other_details.width} inches...
+                                        {vehicle?.other_details && vehicle?.other_details.length} X{' '}
+                                        {vehicle?.other_details && vehicle?.other_details.height} X{' '}
+                                        {vehicle?.other_details && vehicle?.other_details.width} inches...
                                     </li>
                                     <li>
-                                        {vehicle.make} {vehicle.model}{' '}
-                                        {vehicle.payload_weight}
+                                        {vehicle?.make} {vehicle?.model}{' '}
+                                        {vehicle?.payload_weight}
                                     </li>
                                 </ul>
                                 <div
@@ -174,7 +189,7 @@ const TrucksForm = ({ userId, data }) => {
                                     style={{
                                         backgroundColor: 'lightgreen',
                                     }}>
-                                    {vehicle.other_details.is_available
+                                    {vehicle?.other_details && vehicle.other_details.is_available
                                         ? 'Available'
                                         : 'Not Available'}
                                 </div>
@@ -204,6 +219,8 @@ const TrucksForm = ({ userId, data }) => {
                 isOpen={isAddModalOpen}
                 onClose={() => setAddModalOpen(false)}
                 onSubmit={handleAddSubmit}
+                truckTypes={truckTypes}
+                driverStatus={driverStatus}
             />
             {console.log('selectedVehicle: ', selectedVehicle)}
             <EditVehicleModal

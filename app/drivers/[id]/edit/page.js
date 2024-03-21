@@ -122,7 +122,7 @@ const EditDriver = () => {
                       </Tab.Pane>
                       <Tab.Pane eventKey="trucks">
                         <div className="trucks">
-                          {/* <TrucksForm userId={id} data={data} /> */}
+                          <TrucksForm userId={id} data={data} />
                         </div>
                       </Tab.Pane>
                       <Tab.Pane eventKey="reminder">
