@@ -130,7 +130,6 @@ const FindTruck = () => {
 
   const assignLoad = async (driver) => {
     try {
-      console.log(driver);
       const body = {
         driver: "1",
         bill_id: "asdf232",
