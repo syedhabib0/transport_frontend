@@ -11,7 +11,8 @@ const apis =  {
     driversLocations:`${baseUrl}/drivers/search-driver-locations`,
     getTruckTypes: `${baseUrl}/truck/get-truck-types`,
     getDriverStatus: `${baseUrl}/get-driver-statuses`,
-    getDriverDropDown : `${baseUrl}/get-driver-dropdown`
+    getDriverDropDown : `${baseUrl}/get-driver-dropdown`,
+    getLoadStatus : `${baseUrl}/get-load-statuses`,
 }
 
 export default apis

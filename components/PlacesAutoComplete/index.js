@@ -3,7 +3,7 @@
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from "@reach/combobox";
 
-const PlacesAutocomplete = ({ setSelected, label,setCurrentLocation }) => {
+const PlacesAutocomplete = ({ setSelected, label, setCurrentLocation }) => {
   const {
     ready,
     value,
@@ -14,18 +14,22 @@ const PlacesAutocomplete = ({ setSelected, label,setCurrentLocation }) => {
 
   const handleSelect = async (address) => {
     clearSuggestions();
-    setValue(address,false);
+    setValue(address, false);
     const results = await getGeocode({ address });
     const { lat, lng } = await getLatLng(results[0]);
     setSelected({ lat, lng });
-    setCurrentLocation({ lat, lng });
+    if (typeof setCurrentLocation === "function") {
+      setCurrentLocation({ lat, lng });
+    }
   };
 
   return (
     <Combobox onSelect={handleSelect}>
-      <label className="rounded-md p-0 flex flex-row border-none focus:border-none focus:ring  focus:ring-opacity-50">
-        {label}
-      </label>
+      {label && (
+        <label className="rounded-md p-0 flex flex-row border-none focus:border-none focus:ring  focus:ring-opacity-50">
+          {label}
+        </label>
+      )}
       <ComboboxInput
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -36,7 +40,7 @@ const PlacesAutocomplete = ({ setSelected, label,setCurrentLocation }) => {
         <ComboboxList>
           {status === "OK" &&
             data.map(({ place_id, description }) => (
-              <ComboboxOption key={place_id} value={description} className="cursor-pointer" />
+              <ComboboxOption key={place_id} value={description} className="cursor-pointer z-[5000]" />
             ))}
         </ComboboxList>
       </ComboboxPopover>

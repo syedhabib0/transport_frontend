@@ -7,26 +7,15 @@ import { FaCalendar, FaDollarSign, FaMoneyBill, FaSearchLocation, FaUsers } from
 import axios from "axios";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
+import PlacesAutocomplete from "../PlacesAutoComplete";
 
-const NewLoadModal = ({ show, handleClose }) => {
+const NewLoadModal = ({ show, handleClose ,driverOptions}) => {
   const { access_token } = useAppSelector((state) => state.auth);
-  const [driverOptions, setDriverOptions] = useState([]);
+  
+  const [pickup, setPickup] = useState(null);
+  const [dropoff, setDropoff] = useState(null);
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const { data, status } = await axios.get(apis.getDriverDropDown, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-        if (status === 200) {
-          setDriverOptions(data.data);
-        }
-      } catch (error) {
-        handleError(error);
-      }
-    };
-    getData();
-  }, [access_token]);
+  
 
   const handleAddLoad = async (values) => {
     try {
@@ -81,13 +70,13 @@ const NewLoadModal = ({ show, handleClose }) => {
         {driverOptions.values}
       </Modal.Header>
       <Modal.Body>
+        <div className="mb-3">
+          <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} />
+        </div>
         <Form onSubmit={formik.handleSubmit}>
           <FormGroup className="mb-3">
             <Form.Label htmlFor="driver">Driver</Form.Label>
             <InputGroup className="mb-3">
-              <InputGroup.Text>
-                <FaUsers />
-              </InputGroup.Text>
               <Form.Select
                 id="driver"
                 name="driver"
@@ -112,9 +101,6 @@ const NewLoadModal = ({ show, handleClose }) => {
           <FormGroup className="mb-3">
             <Form.Label htmlFor="bill_id">Bill ID</Form.Label>
             <InputGroup className="mb-3">
-              <InputGroup.Text id="">
-                <FaMoneyBill />
-              </InputGroup.Text>
               <Form.Control
                 type="text"
                 id="bill_id"
@@ -129,30 +115,8 @@ const NewLoadModal = ({ show, handleClose }) => {
             )}
           </FormGroup>
           <FormGroup className="mb-3">
-            <Form.Label htmlFor="pickup">Pickup</Form.Label>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">
-                <FaSearchLocation />
-              </InputGroup.Text>
-              <Form.Control
-                type="text"
-                id="pickup"
-                name="pickup"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.pickup}
-              />
-            </InputGroup>
-            {formik.touched.pickup && formik.errors.pickup && (
-              <Form.Text className="text-danger">{formik.errors.pickup}</Form.Text>
-            )}
-          </FormGroup>
-          <FormGroup className="mb-3">
             <Form.Label htmlFor="drop_off">Drop Off</Form.Label>
             <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">
-                <FaSearchLocation />
-              </InputGroup.Text>
               <Form.Control
                 type="text"
                 id="drop_off"
@@ -169,9 +133,6 @@ const NewLoadModal = ({ show, handleClose }) => {
           <FormGroup className="mb-3">
             <Form.Label htmlFor="pickup_date">Pickup Date</Form.Label>
             <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">
-                <FaCalendar />
-              </InputGroup.Text>
               <Form.Control
                 type="date"
                 id="pickup_date"
@@ -188,9 +149,6 @@ const NewLoadModal = ({ show, handleClose }) => {
           <FormGroup className="mb-3">
             <Form.Label htmlFor="total_fare">Total Fare</Form.Label>
             <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">
-                <FaDollarSign />
-              </InputGroup.Text>
               <Form.Control
                 type="text"
                 id="total_fare"
@@ -207,9 +165,6 @@ const NewLoadModal = ({ show, handleClose }) => {
           <FormGroup className="mb-3">
             <Form.Label htmlFor="driver_fare">Driver Fare</Form.Label>
             <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">
-                <FaDollarSign />
-              </InputGroup.Text>
               <Form.Control
                 type="text"
                 id="driver_fare"
@@ -223,8 +178,6 @@ const NewLoadModal = ({ show, handleClose }) => {
               <Form.Text className="text-danger">{formik.errors.driver_fare}</Form.Text>
             )}
           </FormGroup>
-
-          {/* Other form fields go here... */}
 
           <FormGroup className="space-x-2 float-right">
             <Button className="bg-primary border-primary" type="submit">
