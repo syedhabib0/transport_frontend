@@ -1,9 +1,8 @@
 // NewLoadModal.js
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Modal, Button, Form, InputGroup, FormGroup } from "react-bootstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { FaCalendar, FaDollarSign, FaMoneyBill, FaSearchLocation, FaUsers } from "react-icons/fa";
 import axios from "axios";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
@@ -15,7 +14,9 @@ const NewLoadModal = ({ show, handleClose ,driverOptions}) => {
   const [pickup, setPickup] = useState(null);
   const [dropoff, setDropoff] = useState(null);
 
-  
+
+
+
 
   const handleAddLoad = async (values) => {
     try {
@@ -71,7 +72,7 @@ const NewLoadModal = ({ show, handleClose ,driverOptions}) => {
       </Modal.Header>
       <Modal.Body>
         <div className="mb-3">
-          <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} />
+            <PlacesAutocomplete setSelected={setPickup} label={"Pickup"}/>
         </div>
         <Form onSubmit={formik.handleSubmit}>
           <FormGroup className="mb-3">

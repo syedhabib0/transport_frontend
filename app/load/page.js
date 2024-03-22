@@ -17,8 +17,7 @@ import Table from "@/components/Table";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
 import { handleError } from "@/utils/functions";
-import { useLoadScript } from "@react-google-maps/api";
-// import Table from '@/components/Table'
+import { useRouter } from "next/navigation";
 
 const initialState = {
   bill_id: "",
@@ -32,13 +31,11 @@ const initialState = {
 };
 
 const Load = () => {
+    const router = useRouter()
   const { access_token } = useAppSelector((state) => state.auth);
 
   const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Load" }];
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
-    libraries: ["places"],
-  });
+ 
   const [driverOptions, setDriverOptions] = useState([]);
   const [loadStatus, setLoadStatus] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,14 +67,13 @@ const Load = () => {
     }));
   };
 
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = () => {
+    router.push("/load/add")
+  }
 
   useEffect(() => {
-    // Fetch data from your Laravel API
     const fetchData = async () => {
       try {
-        // Fetch total and driver earnings
         const {data,status} = await axios.get(apis.loads, {
           params: formData,
           headers: { Authorization: `Bearer ${access_token}` },
@@ -91,9 +87,7 @@ const Load = () => {
         handleError(error);
       }
     };
-
     fetchData(currentPage);
-    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, access_token]);
 
@@ -181,9 +175,7 @@ const Load = () => {
     }));
   }
 
-  if (!isLoaded) {
-    return <div>Is Loading...</div>;
-  }
+  
 
   return (
     <AppLayout>
@@ -299,7 +291,7 @@ const Load = () => {
                 </Row>
                 <Row className="">
                   <Col className="">
-                    <SubmitButton type="button" className="bg-gradients w-40">
+                    <SubmitButton type="button" className="bg-gradients w-40" onClick={() =>setFormData(initialState)}>
                       Reset
                     </SubmitButton>
                   </Col>
@@ -330,7 +322,6 @@ const Load = () => {
                   </SubmitButton>
                 </div>
               </div>
-              <NewLoadModal show={showModal} handleClose={handleCloseModal} driverOptions={driverOptions} />
               <Table
                 className="table-responsive overflow-x-auto"
                 headers={[
@@ -347,8 +338,6 @@ const Load = () => {
                 ]}
                 data={ongoingLoadsData.map((load) => Object.values(load))}
               />
-
-              {/* Pagination component */}
               <Pagination className="w-100 flex justify-content-center">
                 <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
                 <Pagination.Prev
