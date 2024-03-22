@@ -9,14 +9,13 @@ import {
     FormGroup,
     Pagination,
     Row,
-    // Table,
 } from 'react-bootstrap'
 import Button from '@/components/Button'
 import SubmitButton from '@/components/submitbutton'
 import Label from '@/components/Label'
 import InputCustom from '@/components/InputCustom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { FaEdit, FaEye, FaFilter, FaTrash, FaTruck } from 'react-icons/fa'
+import { FaEdit, FaEye,  FaTrash, FaTruck } from 'react-icons/fa'
 import { faFilter } from '@fortawesome/free-solid-svg-icons'
 import NewLoadModal from '@/components/Modal/NewLoadModal'
 import { useEffect, useState } from 'react'
@@ -24,6 +23,7 @@ import axios from 'axios'
 import Table from '@/components/Table'
 import apis from '@/constants/apis'
 import { useAppSelector } from '@/lib/hooks'
+import { handleError } from '@/utils/functions'
 // import Table from '@/components/Table'
 
 const Load = () => {
@@ -33,6 +33,10 @@ const Load = () => {
         { text: 'Dashboard', link: '/dashboard' },
         { text: 'Load' },
     ]
+    const [drivers , setDrivers] = useState([])
+
+
+
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
 
@@ -85,7 +89,7 @@ const Load = () => {
                 setCurrentPage(loadResponse.data.current_page)
                 setTotalPages(loadResponse.data.last_page)
             } catch (error) {
-                console.error('Error fetching drivers:', error)
+                handleError(error)
             }
         }
 

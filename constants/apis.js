@@ -10,8 +10,8 @@ const apis =  {
     bulkDriverCreate : `${baseUrl}/drivers/create/bulk`,
     driversLocations:`${baseUrl}/drivers/search-driver-locations`,
     getTruckTypes: `${baseUrl}/truck/get-truck-types`,
-    getDriverStatus: `${baseUrl}/get-driver-statuses`
-
+    getDriverStatus: `${baseUrl}/get-driver-statuses`,
+    getDriverDropDown : `${baseUrl}/get-driver-dropdown`
 }
 
 export default apis
