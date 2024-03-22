@@ -167,7 +167,7 @@ const FindTruck = () => {
         <Container className="">
           <Row className="content space-x-5">
             {!active ? (
-              <Col className="col-md-7 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
+              <Col className="col-md-5 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
                 <h2 className="text-xl font-bold">Origin Points</h2>
 
                 <PlacesAutocomplete
@@ -232,7 +232,7 @@ const FindTruck = () => {
                 </div>
               </Col>
             ) : (
-              <Col className="col-md-7 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
+              <Col className="col-md-6 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
                 <div className="w-full">
                   <h2 className="text-xl font-bold">{drivers.length} Drivers Found</h2>
                   <button type="button" onClick={() => setActive((prev) => !prev)}>
@@ -264,7 +264,7 @@ const FindTruck = () => {
               <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
                 <Map
                   center={currentLocation}
-                  defaultZoom={3}
+                  defaultZoom={4}
                   mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID}
                   onBoundsChanged={(data) => setCurrentLocation(data.detail.center)}
                 >
