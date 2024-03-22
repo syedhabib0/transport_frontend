@@ -31,7 +31,7 @@ const initialState = {
 };
 
 const Load = () => {
-    const router = useRouter()
+  const router = useRouter()
   const { access_token } = useAppSelector((state) => state.auth);
 
   const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Load" }];
@@ -40,10 +40,7 @@ const Load = () => {
   const [loadStatus, setLoadStatus] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  const [showModal, setShowModal] = useState(false);
   const [loads, setLoads] = useState([]);
-  // State to store the form data
   const [formData, setFormData] = useState(initialState);
 
   // Function to handle form field changes
@@ -56,7 +53,7 @@ const Load = () => {
   };
   // Function to handle form field changes
   const viewLoad = (id) => {
-    console.log("Viewing Item: ", id);
+    router.push(`/load/${id}/view`)
   };
   // Function to handle form field changes
   const handleInputChange = (e) => {

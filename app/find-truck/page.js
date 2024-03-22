@@ -44,27 +44,7 @@ const FindTruck = () => {
   const [drivers, setDrivers] = useState([]);
 
   useEffect(() => {
-    // const getCurrentLocation = () => {
-    //   const geolocationAPI = navigator.geolocation;
-    //   if (!geolocationAPI) {
-    //     toast.error("Geolocation API is not available in your browser!", toastOptions);
-    //   } else {
-    //     geolocationAPI.getCurrentPosition(
-    //       (position) => {
-    //         const { coords } = position;
-    //         setCurrentLocation((prev) => ({
-    //           ...prev,
-    //           lat: coords.latitude,
-    //           lng: coords.longitude,
-    //         }));
-    //       },
-    //       (error) => {
-    //         toast.error("Something went wrong getting your position!", toastOptions);
-    //       }
-    //     );
-    //   }
-    // };
-
+    
     const getData = async () => {
       try {
         const [{ data: driverStatus,status:driverCode }, { data, status }] = await Promise.all([
@@ -83,7 +63,6 @@ const FindTruck = () => {
       }
     };
     getData();
-    // getCurrentLocation();
   }, [access_token]);
 
   function handleSelect(data) {
