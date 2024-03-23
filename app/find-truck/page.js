@@ -19,9 +19,11 @@ import DrawPickupCircle from "@/components/PickupCircle";
 import PlacesAutocomplete from "@/components/PlacesAutoComplete";
 import DriverCard from "@/components/DriverCard";
 import Truck from "@/components/Truck";
+import { useRouter } from "next/navigation";
 const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Find Truck" }];
 
 const FindTruck = () => {
+  const router = useRouter()
   const { access_token } = useAppSelector((state) => state.auth);
   const [truckTypes, setTruckTypes] = useState({});
   const [driverStatus,setDriverStatus] = useState({})
@@ -109,24 +111,8 @@ const FindTruck = () => {
 
   const assignLoad = async (driver) => {
     try {
-      const body = {
-        driver: "1",
-        bill_id: "asdf232",
-        pickup: "north Nazimabad",
-        drop_off: "maymar",
-        pickup_date: "2024-03-06",
-        total_fare: "5000",
-        driver_fare: "2500",
-        pickup_latitude: "",
-        pickup_longitude: "",
-        drop_off_latitude: "",
-        drop_off_longitude: "",
-      };
-      // const { data } = await axios.post(
-      //   apis.loads,
-      //   body,
-      //   { headers: { Authorization: `Bearer ${access_token}` } }
-      // );
+      console.log(driver.driver_id);
+      router.push(`/load/add?driver=${driver.driver_id}`)
     } catch (error) {
       handleError(error);
     }

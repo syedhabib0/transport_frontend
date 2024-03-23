@@ -13,36 +13,21 @@ import { Container, Button, Form, InputGroup, FormGroup } from "react-bootstrap"
 import * as Yup from "yup";
 import { useLoadScript } from "@react-google-maps/api";
 import { toast } from "react-toastify";
-
+import  {useSearchParams} from "next/navigation"
 const breadcrumbItems = [
   { text: "Dashboard", link: "/dashboard" },
   { text: "Load", link: "/load" },
   { text: "add" },
 ];
 const AddLoad = () => {
+  const searchParams = useSearchParams()
+
   const { access_token } = useAppSelector((state) => state.auth);
   const [driverOptions, setDriverOptions] = useState([]);
   const [pickup, setPickup] = useState(null);
   const [dropoff, setDropoff] = useState(null);
   const [pickupAddress , setPickupAddress] = useState(null)
   const [dropoffAddress , setDropoffAddress] = useState(null)
-
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const { data, status } = await axios.get(apis.getDriverDropDown, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-        if (status === 200) {
-          setDriverOptions(data.data);
-        }
-      } catch (error) {
-        handleError(error);
-      }
-    };
-    getData();
-  }, [access_token]);
 
   const formik = useFormik({
     initialValues: {
@@ -92,6 +77,26 @@ const AddLoad = () => {
         }
     },
   });
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const { data, status } = await axios.get(apis.getDriverDropDown, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+        if (status === 200) {
+          setDriverOptions(data.data);
+          // console.log(searchParams.get("driver"));
+          formik.setFieldValue("driver",searchParams.get("driver"),true)
+        }
+      } catch (error) {
+        handleError(error);
+      }
+    };
+    getData();
+  }, [access_token]);
+
+ 
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
