@@ -26,6 +26,9 @@ export async function getUsers(id) {
     const userRef = query(collection(firestore, `users/${id}/my_users`));
     const userQuerySnapshot = await getDocs(userRef);
     const usersIds = userQuerySnapshot.docs.map((doc) => doc.id);
+    if (usersIds.length === 0) {
+      return [];
+    }
     const usersRef = collection(firestore, "users");
     let queryRef = query(usersRef, where("id", "in", usersIds));
     const querySnapshot = await getDocs(queryRef);
@@ -59,15 +62,15 @@ export async function CheckChatExists(email, user) {
 export async function insertFirstMessage(chatUser, message, type, user) {
   try {
     const data = {
-      toId: chatUser.id,
-      message: message,
+      toId: chatUser.id.toString(),
+      message: message.toString(),
       read: Date.now(),
-      type: type,
-      fromId: user.id,
+      type: type.toString(),
+      fromId: user.id.toString(),
       sent: Date.now(),
     };
 
-    const isUserExists = await checkChatExists(chatUser.email, user);
+    const isUserExists = await CheckChatExists(chatUser.email, user);
     if (!isUserExists) {
       toast.error("User not found");
       return false;
@@ -108,11 +111,11 @@ export async function getAllMessages(user, chatUser) {
 export async function insertMessage(chatUser, message, type, user) {
   try {
     const data = {
-      toId: chatUser.id,
-      message: message,
+      toId: chatUser.id.toString(),
+      message: message.toString(),
       read: Date.now(),
-      type: type,
-      fromId: user.id,
+      type: type.toString(),
+      fromId: user.id.toString(),
       sent: Date.now(),
     };
 

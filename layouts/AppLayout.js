@@ -17,7 +17,7 @@ const AppLayout = ({ children, welcome }) => {
           about:"Hey, I'm using IWS Chat!",
           created_at:Date.now(),
           email:user.email,
-          id:user.id,
+          id:user.id.toString(),
           image:user.profile ?? "",
           is_online:true,
           last_active:Date.now(),
