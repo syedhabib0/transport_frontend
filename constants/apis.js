@@ -13,6 +13,7 @@ const apis =  {
     getDriverStatus: `${baseUrl}/get-driver-statuses`,
     getDriverDropDown : `${baseUrl}/get-driver-dropdown`,
     getLoadStatus : `${baseUrl}/get-load-statuses`,
+    getOnGoingLoads : `${baseUrl}/loads/get-on-going-loads`
 }
 
 export default apis

@@ -20,7 +20,7 @@ const breadcrumbItems = [
   { text: "add" },
 ];
 const AddLoad = () => {
-  const searchParams = useSearchParams()
+  // const searchParams = useSearchParams()
 
   const { access_token } = useAppSelector((state) => state.auth);
   const [driverOptions, setDriverOptions] = useState([]);
@@ -87,7 +87,7 @@ const AddLoad = () => {
         if (status === 200) {
           setDriverOptions(data.data);
           // console.log(searchParams.get("driver"));
-          formik.setFieldValue("driver",searchParams.get("driver"),true)
+          // formik.setFieldValue("driver",searchParams.get("driver"),true)
         }
       } catch (error) {
         handleError(error);

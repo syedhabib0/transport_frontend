@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import UpdateDriverStatusModal from "@/components/Modal/UpdateDriverStatusModal";
-import NewLoadModal from "@/components/Modal/NewLoadModal";
+// import NewLoadModal from "@/components/Modal/NewLoadModal";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
 import { handleError } from "@/utils/functions";
@@ -113,7 +113,7 @@ const Drivers = () => {
   const handleView = (id) => {
     // Add logic to view the item with the given id
     console.log(`View item with id ${id}`);
-    router.push(`/drivers/${id}`);
+    router.push(`/drivers/${id}/edit`);
   };
 
   const handleEdit = (id) => {
@@ -272,7 +272,7 @@ const Drivers = () => {
                   </SubmitButton>
                 </div>
               </div>
-              <NewLoadModal show={showLoadModal} handleClose={handleCloseLoadModal} />
+              {/* <NewLoadModal show={showLoadModal} handleClose={handleCloseLoadModal} /> */}
               <Table striped responsive>
                 <tbody className="space-y-10">
                   <tr>
