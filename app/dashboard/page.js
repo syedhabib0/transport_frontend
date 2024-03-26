@@ -15,6 +15,9 @@ import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
 import axios from "axios";
 
+
+
+
 const Dashboard = () => {
   const breadcrumbItems = [{ text: "Dashboard" }];
   const { access_token } = useAppSelector((state) => state.auth);
@@ -26,35 +29,30 @@ const Dashboard = () => {
   const [completeLoad, setCompleteLoad] = useState(0);
   const [totalDriver, setTotalDriver] = useState(0);
   const [activeDriver, setActiveDriver] = useState(0);
-  const [ongoingLoads, setOngoingLoads] = useState([]);
 
   const loadStats = [
     {
       icon: "📦",
       title: "Total Loads",
       count: totalLoad,
-      // count: 496,
       link: "/load",
     },
     {
       icon: "✅",
       title: "Complete Loads",
       count: completeLoad,
-      // count: 496,
-      link: "/load?completed",
+      link: "/load",
     },
     {
       icon: "🚚",
       title: "Total Drivers",
       count: totalDriver,
-      // count: 496,
       link: "/drivers",
     },
     {
       icon: "👥",
       title: "Active Drivers",
       count: activeDriver,
-      // count: 496,
       link: "/drivers",
     },
   ];
@@ -62,33 +60,18 @@ const Dashboard = () => {
   useEffect(() => {
     // Fetch data from your Laravel API
     const fetchData = async () => {
-      // Fetch total and driver earnings
       try {
-        // const loadResponse = await axios.get(apis.loads, {
-        //   headers: { Authorization: `Bearer ${access_token}` },
-        // });
-        // const dashboardResponse = await axios.get(apis.dashboardStates, {
-        //   headers: { Authorization: `Bearer ${access_token}` },
-        // });
-        // console.log(dashboardResponse);
-        // console.log(loadResponse);
-        // setDashboardData(dashboardResponse)
-        // const {
-        //     totalLoads,
-        //     drivers,
-        //     completeLoads,
-        //     totalDrivers,
-        //     activeDrivers,
-        //     totalEarnings,
-        //     driverEarnings,
-        // } = await dashboardResponse.data
-        // setTotalEarning(totalEarnings)
-        // setDriverEarning(driverEarnings)
-        // setTotalLoad(totalLoads)
-        // setCompleteLoad(completeLoads)
-        // setTotalDriver(drivers.length)
-        // setActiveDriver(activeDrivers)
-        // setOngoingLoads(loadResponse.data)
+        const {data,status} = await axios.get(apis.dashboardStates, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+        console.log(data);
+        setActiveDriver(data.activeDrivers)
+        setCompleteLoad(data.completeLoads)
+        setTotalLoad(data.totalLoads)
+        setTotalDriver(data.totalDrivers)
+        setTotalEarning(data.totalEarnings)
+        setDriverEarning(data.driverEarnings)
+        setDashboardData(data)
       } catch (error) {
         handleError(error);
       }
@@ -150,15 +133,15 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="mt-6">
-              <div className="flex justify-between items-center">
+            {/* <div className="mt-6"> */}
+              {/* <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold text-primary-color">Ongoing Loads</h2>
                 <Link href="/load" className="secondary-color">
                   <span>
                     Load More <FontAwesomeIcon icon={faAnglesRight} />
                   </span>
                 </Link>
-              </div>
+              </div> */}
               {/* <Table
                             headers={[
                                 'Load ID',
@@ -172,7 +155,7 @@ const Dashboard = () => {
                                 Object.values(load),
                             )}
                         /> */}
-            </div>
+            {/* </div> */}
           </div>
         </div>
       </AppLayout>
