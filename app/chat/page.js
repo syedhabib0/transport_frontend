@@ -2,27 +2,19 @@
 import Breadcrumb from "@/components/Breadcrumb";
 import AppLayout from "@/layouts/AppLayout";
 import Head from "next/head";
-import user1 from "@/public/assets/images/default-profile.png";
-import styles from "./style.module.css"; // Import your CSS file for styling
 import { Col, Container, Form, FormControl, InputGroup, Row } from "react-bootstrap";
-import { BiMessageAltDetail, BiSearch } from "react-icons/bi"; // Import the search icon
+import { BiMessageAltDetail } from "react-icons/bi"; // Import the search icon
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import InputCustom from "@/components/InputCustom";
 import { FaPaperPlane } from "react-icons/fa";
 import { handleError } from "@/utils/functions";
-import {
-  getAllMessages,
-  getUsers,
-  insertFirstMessage,
-  insertMessage,
-  listenForNewMessages,
-  messageTypes,
-} from "@/utils/firebase/chat";
+import { getUsers, insertMessage, listenForNewMessages, messageTypes } from "@/utils/firebase/chat";
 import { useAppSelector } from "@/lib/hooks";
 import moment from "moment";
 import { baseimage } from "@/constants/apis";
-import { toast } from "react-toastify";
+import axios from "axios";
+
 const Chat = () => {
   const divRef = useRef();
   const { user } = useAppSelector((state) => state.auth);
@@ -101,7 +93,6 @@ const Chat = () => {
       );
     });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -109,8 +100,23 @@ const Chat = () => {
       if (isMessageAdded) {
         setMessage("");
       }
+      if (false) {
+        var body = {
+          to: active.push_token,
+          priority: "high",
+          notification: {
+            title: `${user.first_name} ${user.last_name} Messaged You`,
+            body: message,
+          },
+          data: {},
+        };
+        const { data } = await axios.post("https://fcm.googleapis.com/fcm/send", body, {
+          headers: { Authorization: process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY },
+        });
+        console.log(data);
+      }
     } catch (error) {
-      handleError(error);
+      console.error(error);
     }
   };
 
