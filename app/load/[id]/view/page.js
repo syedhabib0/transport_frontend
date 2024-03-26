@@ -4,10 +4,8 @@ import Head from "next/head";
 import Image from "next/image";
 import { Col, Container, Row, Table } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import Map from "@/public/assets/images/thumbnail (1).jpeg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTruckFast } from "@fortawesome/free-solid-svg-icons";
-import avatar from "@/public/assets/images/drivers.png";
 import Button from "@/components/Button";
 import SubmitButton from "@/components/submitbutton";
 import AppLayout from "@/layouts/AppLayout";
@@ -16,13 +14,15 @@ import axios from "axios";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
 import { useParams } from "next/navigation";
-
+import { APIProvider ,Map} from "@vis.gl/react-google-maps";
+import DirectionRenderer from "@/components/DirectionRenderer";
+const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Track" }];
 const ViewLoad = () => {
   const { id } = useParams();
   const { access_token } = useAppSelector((state) => state.auth);
   const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-
+  const [currentLocation, setCurrentLocation] = useState({ lat: 37.0902, lng: -95.7129 });
   useEffect(() => {
     const getData = async () => {
       try {
@@ -43,69 +43,6 @@ const ViewLoad = () => {
     getData();
   }, [access_token, id]);
 
-  // Array of all options
-  const tableData = [
-    {
-      "Load ID": "224967711",
-      "Pickup Date/Time": "Oct 07, 2023 07:46",
-      "Journey Duration (Est.)": "8hrs, 11 mins",
-      "Journey Distance(Est.)": "475.94 mile(s)",
-    },
-    {
-      "Bill ID": "1234",
-      "Dropoff Date/Time": "Journey not completed.",
-      Pickup: "Carson City, NV, USA",
-    },
-    {
-      id: "1",
-      driver_id: "NJ 08046",
-      name: "Jeff B Louisius Willingboro",
-      email: "jlouisius1@gmail.com",
-      phone: "+1 8625715342",
-      avatarurl: avatar,
-      license: "--",
-    },
-  ];
-  const remainingData = [
-    [
-      (id) => 1,
-      (driver_id) => "NJ 08046",
-      (name) => "Jeff B Louisius Willingboro",
-      (email) => "jlouisius1@gmail.com",
-      (phone) => "+1 8625715342",
-      (avatarurl) => avatar,
-      (license) => "--",
-    ],
-    [
-      (type) => "cargo van",
-      (load) => "1416",
-      (size) => "170 X 52 X 70 inches",
-      (make) => "Merz",
-      (model) => "Sprinter",
-    ],
-    [
-      (created) => "Super Admin Oct 07, 2023 07:46",
-      (assigned) => "Super Admin Oct 07, 2023 07:46",
-      (tripStarted) => "Super Admin Oct 07, 2023 07:46",
-    ],
-    [(booking) => "Ongoing"],
-    [
-      (booked_by) => "Super Admin",
-      (booked_at) => "Oct 07, 2023 07:46",
-      (confirmed_at) => "Oct 07, 2023 07:46",
-      (started_at) => "Oct 07, 2023 07:46",
-      (end_at) => "--",
-    ],
-    [
-      (system_estimate) => "",
-      (total_fair) => "$700",
-      (driver_fair) => "$550",
-      (payment_status) => "not_paid",
-    ],
-  ];
-
-  const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Track" }];
-
   return (
     <AppLayout>
       <Head>
@@ -122,24 +59,23 @@ const ViewLoad = () => {
                 <Row className="space-y-5">
                   <Col className="flex justify-content-between">
                     <h2 className="text-xl font-bold">Journey Info</h2>
-                    <SubmitButton type="button" className="w-max bg-primary">
+                    {/* <SubmitButton type="button" className="w-max bg-primary">
                       Edit
-                    </SubmitButton>
+                    </SubmitButton> */}
                   </Col>
-                  <div className="w-100 h-40 lg:h-60 border-gradient border-gradient-color position-relative">
-                    <Image
-                      src={Map}
-                      width="200"
-                      height={20}
-                      className="h-100 w-100 object-cover position-relative"
-                      alt="Driver Location"
-                    />
-                    <SubmitButton
-                      type="button"
-                      className="position-absolute bottom-3 right-2 w-max bg-primary"
-                    >
-                      Map Track
-                    </SubmitButton>
+                  <div className="w-100 h-40 !p-0 lg:h-60 border-gradient border-gradient-color position-relative">
+                    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}>
+                      <Col className=" px-0 w-full h-40 lg:h-60 bg-white border-gradient border-gradient-color">
+                        <Map
+                          center={currentLocation}
+                          defaultZoom={4}
+                          mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID}
+                          onBoundsChanged={(data) => setCurrentLocation(data.detail.center)}
+                        >
+                          <DirectionRenderer pickup={data?.pickup_location} dropoff={data?.dropoff_location} />
+                        </Map>
+                      </Col>
+                    </APIProvider>
                   </div>
                   <Col className="flex border-gradient border-gradient-color px-0">
                     {/* <Table className="table-striped" headers={[]} data={data[0]} /> */}
@@ -166,7 +102,7 @@ const ViewLoad = () => {
                             <span>
                               <strong>Journey Duration (Est.): </strong>
                             </span>
-                            <span>8hrs, 11 mins</span>
+                            <span>--</span>
                           </td>
                         </tr>
                         <tr className="space-x-16">
@@ -174,33 +110,33 @@ const ViewLoad = () => {
                             <span>
                               <strong>Journey Distance(Est.) </strong>
                             </span>
-                            <span>475.94 mile(s) </span>
+                            <span>-- </span>
                           </td>
                         </tr>
                       </tbody>
                     </Table>
                     <Table striped responsive>
                       <tbody>
-                        <tr className="space-x-16" >
+                        <tr className="space-x-16">
                           <td>
                             <span>
-                              <strong>Bill ID:  </strong>
+                              <strong>Bill ID: </strong>
                             </span>
                             <span>----</span>
                           </td>
                         </tr>
-                        <tr className="space-x-16" >
+                        <tr className="space-x-16">
                           <td>
                             <span>
-                              <strong>Dropoff Date/Time:  </strong>
+                              <strong>Dropoff Date/Time: </strong>
                             </span>
-                            <span>Journey not completed.</span>
+                            <span>--</span>
                           </td>
                         </tr>
-                        <tr className="space-x-16" >
+                        <tr className="space-x-16">
                           <td>
                             <span>
-                              <strong>Pickup:  </strong>
+                              <strong>Pickup: </strong>
                             </span>
                             <span>{data.pickup_location}</span>
                           </td>
@@ -223,7 +159,8 @@ const ViewLoad = () => {
                       <tbody className="">
                         <tr className="space-x-16 h-14 align-middle">
                           <td colSpan={2}>
-                            <strong>Full Name:</strong> {data.driver.user.first_name + " " + data.driver.user.last_name}, {data.driver.id}
+                            <strong>Full Name:</strong>{" "}
+                            {data.driver.user.first_name + " " + data.driver.user.last_name}, {data.driver.id}
                           </td>
                         </tr>
                         <tr className="space-x-16 h-14 align-middle">
@@ -252,20 +189,23 @@ const ViewLoad = () => {
                 <h2 className="text-2xl font-bold">Vehicle Details</h2>
                 <hr />
                 <div>
-                  <FontAwesomeIcon className="primary-color" icon={faTruckFast} /> Cargo_van
+                  <FontAwesomeIcon className="primary-color" icon={faTruckFast} />{" "}
+                  {data?.driver?.vehicles[0]?.vehicle_type}
                 </div>
                 <div>
-                  <FontAwesomeIcon className="primary-color" icon={faBars} /> 1416
+                  <FontAwesomeIcon className="primary-color" icon={faBars} />{" "}
+                  {data?.driver?.vehicles[0]?.payload_weight}
                 </div>
                 <div>
-                  <FontAwesomeIcon className="primary-color" icon={faBars} /> 170 X 52 X 70 inches
+                  <FontAwesomeIcon className="primary-color" icon={faBars} /> -- X -- X -- inches
                 </div>
                 <div>
-                  <FontAwesomeIcon className="primary-color" icon={faTruckFast} /> <strong>Make: </strong>Merz
+                  <FontAwesomeIcon className="primary-color" icon={faTruckFast} /> <strong>Make: </strong>
+                  {data?.driver?.vehicles[0]?.make}
                 </div>
                 <div>
                   <FontAwesomeIcon className="primary-color" icon={faTruckFast} /> <strong>Model: </strong>
-                  Sprinter
+                  {data?.driver?.vehicles[0]?.model}
                 </div>
               </Col>
               <Col className="bg-white mt-3 p-5 space-y-3">
@@ -275,15 +215,15 @@ const ViewLoad = () => {
                   <tbody>
                     <tr>
                       <th>Created:</th>
-                      <td>Super Admin Oct 07, 2023 07:46</td>
+                      <td>--</td>
                     </tr>
                     <tr>
                       <th>Assigned:</th>
-                      <td>Super Admin Oct 07, 2023 07:46</td>
+                      <td>--</td>
                     </tr>
                     <tr>
                       <th>Trip Started:</th>
-                      <td>Super Admin Oct 07, 2023 07:46</td>
+                      <td>--</td>
                     </tr>
                   </tbody>
                 </Table>
@@ -296,7 +236,9 @@ const ViewLoad = () => {
                     <tr>
                       <th>Booking</th>
                       <td>
-                        <Button className="bg-gradients text-white text-xs rounded-pill">Ongoing</Button>
+                        <Button className="bg-gradients text-white text-xs rounded-pill">
+                          {data.status}
+                        </Button>
                       </td>
                     </tr>
                   </tbody>
@@ -311,19 +253,19 @@ const ViewLoad = () => {
                   <tbody>
                     <tr>
                       <th>Booked By</th>
-                      <td>Super Admin</td>
+                      <td>--</td>
                     </tr>
                     <tr>
                       <th>Booked At</th>
-                      <td>Oct 07, 2023 07:46</td>
+                      <td>--</td>
                     </tr>
                     <tr>
                       <th>Booking Confirmed At</th>
-                      <td>Oct 07, 2023 07:46</td>
+                      <td>--</td>
                     </tr>
                     <tr>
                       <th>Start At</th>
-                      <td>Oct 07, 2023 07:46</td>
+                      <td>--</td>
                     </tr>
                     <tr>
                       <th>End Trip At</th>
@@ -343,16 +285,16 @@ const ViewLoad = () => {
                     </tr>
                     <tr>
                       <th style={{ color: "lightgreen" }}>Total Fare</th>
-                      <td style={{ color: "lightgreen" }}>$700</td>
+                      <td style={{ color: "lightgreen" }}>${data?.total_fare}</td>
                     </tr>
                     <tr>
                       <th>Driver Fare</th>
-                      <td>$550</td>
+                      <td>${data?.driver_fare}</td>
                     </tr>
                     <tr>
                       <th>Payment Status</th>
                       <td>
-                        <Button className="bg-gradients text-white text-xs rounded-pill">NOT PAID</Button>
+                        <Button className="bg-gradients text-white text-xs rounded-pill">--</Button>
                       </td>
                     </tr>
                   </tbody>

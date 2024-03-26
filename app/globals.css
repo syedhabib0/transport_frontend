@@ -210,3 +210,9 @@ body {
     background-color: var(--primary-color) !important;
     color: #fff !important;
 }
+
+
+a{ 
+    color: inherit !important;
+    text-decoration: none !important;
+}

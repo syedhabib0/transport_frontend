@@ -55,14 +55,14 @@ const TrackLoad = () => {
                 <Card className="flex flex-column w-100  p-4" key={key}>
                   <div className="">
                     <div className="flex flex-row">
-                      <div className="bg-primary rounded-full p-2 m-2 h-16 w-16">
+                      <div className="m-2 h-16 w-16">
                         <Image
                           src={item.driver.profile.profile_photo}
                           width={50}
                           height={50}
                           alt="User Avatar"
                           roundedCircle
-                          className="me-2"
+                          className="size-full rounded-full object-cover"
                           style={{
                             maxWidth: "50px",
                             maxHeight: "50px",
