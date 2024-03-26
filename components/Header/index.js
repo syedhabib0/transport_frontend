@@ -32,7 +32,6 @@ const Header = ({ username, avatarUrl, welcome }) => {
       className="w-auto mx-5 my-3 px-4 py-5 shadow-xl justify-content-between"
       style={{ borderRadius: "50px 0px" }}
     >
-      {/* Left Side - Welcome Back */}
       {welcome && (
         <div>
           <h6>Welcome Back,</h6>
@@ -71,11 +70,8 @@ const Header = ({ username, avatarUrl, welcome }) => {
             onToggle={handleDropdownToggle}
             onSelect={handleDropdownClose}
           >
-            <NavDropdown.Item eventKey="profile" onClick={() => router.push("")}>
+            <NavDropdown.Item eventKey="profile" onClick={() => router.push("/profile")}>
               Profile
-            </NavDropdown.Item>
-            <NavDropdown.Item eventKey="settings" onClick={() => router.push("")}>
-              Settings
             </NavDropdown.Item>
             <NavDropdown.Item eventKey="logout" onClick={logout}>
               Logout
