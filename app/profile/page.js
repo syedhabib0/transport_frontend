@@ -37,7 +37,6 @@ const Profile = () => {
                   <div className="text-2xl font-medium text-slate-900 dark:text-slate-200 mb-[3px]">
                     {`${user?.first_name} ${user?.last_name}`}
                   </div>
-                  <div className="text-sm font-light text-slate-600 dark:text-slate-400">Buyer</div>
                 </div>
               </div>
             </div>

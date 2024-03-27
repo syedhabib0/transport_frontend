@@ -14,8 +14,9 @@ import axios from "axios";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
 import { useParams } from "next/navigation";
-import { APIProvider ,Map} from "@vis.gl/react-google-maps";
+import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 import DirectionRenderer from "@/components/DirectionRenderer";
+import Truck from "@/components/Truck";
 const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Track" }];
 const ViewLoad = () => {
   const { id } = useParams();
@@ -72,7 +73,18 @@ const ViewLoad = () => {
                           mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID}
                           onBoundsChanged={(data) => setCurrentLocation(data.detail.center)}
                         >
-                          <DirectionRenderer pickup={data?.pickup_location} dropoff={data?.dropoff_location} />
+                          <DirectionRenderer
+                            pickup={data?.pickup_location}
+                            dropoff={data?.dropoff_location}
+                          />
+                          <AdvancedMarker
+                            position={{
+                              lat: parseFloat(data.current_location.latitude),
+                              lng: parseFloat(data.current_location.longitude),
+                            }}
+                          >
+                            <Truck />
+                          </AdvancedMarker>
                         </Map>
                       </Col>
                     </APIProvider>
