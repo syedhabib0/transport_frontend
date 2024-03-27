@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { trucksFeatures } from "@/constants/data";
 
-const AddVehicleModal = ({ isOpen, onClose, onSubmit, truckTypes, driverStatus }) => {
+const AddVehicleModal = ({ isOpen, onClose, onSubmit, truckTypes }) => {
   const [licensePlate, setLicensePlate] = useState("/assets/images/placeholder.jpg");
   const [frontImage, setFrontImage] = useState("/assets/images/placeholder.jpg");
   const [backImage, setBackImage] = useState("/assets/images/placeholder.jpg");

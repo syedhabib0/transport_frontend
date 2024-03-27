@@ -14,7 +14,6 @@ import { fetchDriverStatus } from "@/lib/driverStatus/slice";
 const TrucksForm = ({ userId, data }) => {
   const { access_token } = useAppSelector((state) => state.auth);
   const { truckTypes } = useAppSelector((state) => state.truckType);
-  const { driverStatus } = useAppSelector((state) => state.driverStatus);
 
   const dispatch = useAppDispatch();
 
@@ -112,7 +111,6 @@ const TrucksForm = ({ userId, data }) => {
       // setIsSubmitting(false);
     }
 
-    // Close the modal
     setAddModalOpen(false);
   };
 
@@ -201,7 +199,6 @@ const TrucksForm = ({ userId, data }) => {
         onClose={() => setAddModalOpen(false)}
         onSubmit={handleAddSubmit}
         truckTypes={truckTypes}
-        driverStatus={driverStatus}
       />
       {console.log("selectedVehicle: ", selectedVehicle)}
       <EditVehicleModal
@@ -209,7 +206,8 @@ const TrucksForm = ({ userId, data }) => {
         onClose={() => setEditModalOpen(false)}
         onSubmit={handleEditSubmit}
         vehicleId={selectedVehicle ? selectedVehicle.id : null}
-        userId={data.user.id}
+        userId={userId}
+        truckTypes={truckTypes}
       />
     </Row>
   );
