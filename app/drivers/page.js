@@ -14,73 +14,38 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import UpdateDriverStatusModal from "@/components/Modal/UpdateDriverStatusModal";
-// import NewLoadModal from "@/components/Modal/NewLoadModal";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
 import { handleError } from "@/utils/functions";
-
+const initialState = {
+  name: "",
+  email: "",
+  status: "",
+  per_page: "10",
+};
 const Drivers = () => {
   const { access_token } = useAppSelector((state) => state.auth);
   const [driverStatusOption, setDriverStatusOption] = useState({})
-
   const [drivers, setDrivers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedDriverId, setSelectedDriverId] = useState(null);
   const [driverStatus, setDriverStatus] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [showLoadModal, setShowLoadModal] = useState(false);
-  const [filters, setFilters] = useState({
-    namePhoneEmail: "",
-    status: "",
-    unitNumber: "",
-  });
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const [formData, setFormData] = useState(initialState);
+  
 
   const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Drivers" }];
 
-  const handleSearch = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post(apis.searchdrivers, filters, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
 
-      setDrivers(response.data.drivers);
-    } catch (error) {
-      console.error("Error searching drivers:", error);
-    }
-  };
+  const handleChange  = (e) => {
+    const {name, value} = e.target
+    setFormData( prev => ({...prev, [name]:value}))
+  }
+  
 
-  useEffect(() => {
-    // Define a function to fetch filtered drivers
-    const fetchFilteredDrivers = async () => {
-      try {
-        // Make a POST request to your Laravel API endpoint
-        const response = await axios.post(apis.searchdrivers, filters, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
+  
 
-        // Set the retrieved drivers in the state
-        setDrivers(response.data.drivers);
-      } catch (error) {
-        console.error("Error fetching filtered drivers:", error);
-      }
-    };
-
-    fetchFilteredDrivers();
-  }, [access_token, filters]);
-
-  // Function to handle filter changes
-  const handleFilterChange = (filterName, value) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [filterName]: value,
-    }));
-  };
-
-  const handleShowLoadModal = () => setShowLoadModal(true);
-  const handleCloseLoadModal = () => setShowLoadModal(false);
 
   const handleShowModal = (driverId, status) => {
     setSelectedDriverId(driverId);
@@ -122,10 +87,16 @@ const Drivers = () => {
     router.push(`/drivers/${id}/edit`);
   };
 
-  const handleDelete = (id) => {
-    // Add logic to delete the item with the given id
-    console.log(`Delete item with id ${id}`);
-  };
+  
+  const handleFilter =(e) => {
+    e.preventDefault();
+    try {
+      
+    } catch (error) {
+      handleError(error) 
+    }
+  }
+
 
   const fetchDrivers = async () => {
     try {
@@ -198,7 +169,7 @@ const Drivers = () => {
           <Row className="content space-x-5 px-3 bg-white pb-10 pt-3 mt-4">
             <Col className="flex flex-col space-y-5 justify-content-between">
               <h2 className="text-xl font-bold">Search</h2>
-              <Form className="space-y-5" onSubmit={handleSearch}>
+              <Form className="space-y-5" onSubmit={handleFilter}>
                 <Row>
                   {/* First Line */}
                   <Col md={4} className="mb-6">
@@ -206,13 +177,24 @@ const Drivers = () => {
                       <Label htmlFor="namePhoneEmail">Driver:</Label>
                       <InputCustom
                         type="text"
-                        name="namePhoneEmail"
-                        id="namePhoneEmail"
-                        // value={namePhoneEmail}
-                        // onChange={(e) => setNamePhoneEmail(e.target.value)}
-                        value={filters.namePhoneEmail}
-                        onChange={(e) => handleFilterChange("namePhoneEmail", e.target.value)}
-                        placeholder="Name / Phone Num / Email"
+                        name="name"
+                        id="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Name..."
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={4} className="mb-6">
+                    <FormGroup>
+                      <Label htmlFor="unitNumber">Unit Number:</Label>
+                      <InputCustom
+                        type="email"
+                        name="email"
+                        id="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Email"
                       />
                     </FormGroup>
                   </Col>
@@ -221,8 +203,8 @@ const Drivers = () => {
                       <Label htmlFor="status">Status:</Label>
                       <Form.Select
                         name="status"
-                        value={filters.status}
-                        onChange={(e) => handleFilterChange("status", e.target.value)}
+                        value={formData.status}
+                        onChange={handleChange}
                       >
                         <option value="">Select Status</option>
                         {Object.keys(driverStatusOption).map(key => (
@@ -231,24 +213,12 @@ const Drivers = () => {
                       </Form.Select>
                     </FormGroup>
                   </Col>
-                  <Col md={4} className="mb-6">
-                    <FormGroup>
-                      <Label htmlFor="unitNumber">Unit Number:</Label>
-                      <InputCustom
-                        type="text"
-                        name="unitNumber"
-                        id="unitNumber"
-                        value={filters.unitNumber}
-                        onChange={(e) => handleFilterChange("unitNumber", e.target.value)}
-                      />
-                    </FormGroup>
-                  </Col>
                 </Row>
                 <hr />
                 <Row className="">
-                  <Col className="space-x-5">
-                    <SubmitButton className="bg-gradients w-40">Reset</SubmitButton>
-                    <SubmitButton className="bg-white text-black w-40 border-gradient border-gradient-color">
+                  <Col className="space-x-5 flex">
+                    <SubmitButton type="button" className="bg-gradients w-40" onClick={()=>setFormData(initialState)}>Reset</SubmitButton>
+                    <SubmitButton type="submit" className="bg-white !text-black primary-color w-40 border-gradient border-gradient-color">
                       <FontAwesomeIcon icon={faFilter} className="primary-color" /> Filter
                     </SubmitButton>
                   </Col>
@@ -264,12 +234,7 @@ const Drivers = () => {
                   <Link href={"/drivers/create"}>
                     <SubmitButton className="bg-gradients w-40">Add Driver</SubmitButton>
                   </Link>
-                  <SubmitButton
-                    className="bg-white text-black w-40 border-gradient border-gradient-color"
-                    onClick={handleShowLoadModal}
-                  >
-                    New Load
-                  </SubmitButton>
+                 
                 </div>
               </div>
               {/* <NewLoadModal show={showLoadModal} handleClose={handleCloseLoadModal} /> */}
@@ -331,7 +296,6 @@ const Drivers = () => {
                             <Dropdown.Menu>
                               <Dropdown.Item onClick={() => handleView(driver.id)}>View</Dropdown.Item>
                               <Dropdown.Item onClick={() => handleEdit(driver.id)}>Edit</Dropdown.Item>
-                              <Dropdown.Item onClick={() => handleDelete(driver.id)}>Delete</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
                         </td>
