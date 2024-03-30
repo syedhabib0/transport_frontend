@@ -13,6 +13,7 @@ import apis from "@/constants/apis";
 import { useRouter } from "next/navigation";
 import { setAuth } from "@/lib/auth/slice";
 import ApplicationLogo from "@/components/ApplicationLogo";
+import { toast } from "react-toastify";
 export default function Home() {
   const initialized = useRef(false);
   if (!initialized.current) {
@@ -51,7 +52,9 @@ export default function Home() {
         throw new Error(data.message);
       }
     } catch (error) {
-      handleError(error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response.data.message);
+      }
     }
   };
 

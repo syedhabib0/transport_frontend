@@ -13,7 +13,10 @@ const apis =  {
     getDriverStatus: `${baseUrl}/get-driver-statuses`,
     getDriverDropDown : `${baseUrl}/get-driver-dropdown`,
     getLoadStatus : `${baseUrl}/get-load-statuses`,
-    getOnGoingLoads : `${baseUrl}/loads/get-on-going-loads`
+    getOnGoingLoads : `${baseUrl}/loads/get-on-going-loads`,
+    forgotPassword:`${baseUrl}/forgot-password`,
+    registration:`${baseUrl}/user-registration`,
+    resetPassword:`${baseUrl}/reset-password`
 }
 
 export default apis

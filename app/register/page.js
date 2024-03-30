@@ -8,6 +8,10 @@ import { Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import SubmitButton from "@/components/submitbutton";
+import { handleError } from "@/utils/functions";
+import axios from "axios";
+import apis from "@/constants/apis";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [formData,setFormData] = useState({
@@ -21,9 +25,16 @@ const Register = () => {
   const [showConfirmPassword, setshowConfirmPassword] = useState(false);
 
 
-  const submitForm = (event) => {
+  const submitForm = async (event) => {
     event.preventDefault();
-
+    try { 
+      const {data,status} = await axios.post(apis.registration,formData)
+      if (status === 200) {
+        toast.success(data.message)
+      }
+    } catch (error) {
+      handleError(error) 
+    }
   };
 
  
@@ -99,7 +110,7 @@ const Register = () => {
             type={showPassword? "text": "password"}
             value={formData.password}
             className="mt-1 w-full"
-            onChange={formData.password}
+            onChange={handleChange}
             required
             icon={<FontAwesomeIcon icon={!showPassword ? faEyeSlash : faEye} onClick={()=>setShowPassword(prev => !prev)} />}
             placeholder="Password"
