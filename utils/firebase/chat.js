@@ -63,7 +63,7 @@ export async function insertFirstMessage(chatUser, message, type, user) {
   try {
     const data = {
       toId: chatUser.id.toString(),
-      message: message.toString(),
+      msg: message.toString(),
       read: Date.now(),
       type: type.toString(),
       fromId: user.id.toString(),
@@ -112,7 +112,7 @@ export async function insertMessage(chatUser, message, type, user) {
   try {
     const data = {
       toId: chatUser.id.toString(),
-      message: message.toString(),
+      msg: message.toString(),
       read: Date.now(),
       type: type.toString(),
       fromId: user.id.toString(),

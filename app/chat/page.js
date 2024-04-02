@@ -85,7 +85,7 @@ const Chat = () => {
                   {message.fromId === user.id ? `${user.first_name} ${user.last_name}` : active.name}
                 </strong>{" "}
               </p>
-              <div className="text">{message.message}</div>
+              <div className="text">{message.msg}</div>
               <div className="timestamp gray-color">{moment(message.sent).format("DD/MM/YY hh:mm:a")}</div>
             </div>
           </div>
