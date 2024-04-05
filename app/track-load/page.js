@@ -3,7 +3,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import Head from "next/head";
 import Image from "next/image";
 import { Col, Container, Row } from "react-bootstrap";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Card from "@/components/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark, faMap } from "@fortawesome/free-solid-svg-icons";
