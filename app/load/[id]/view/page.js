@@ -3,7 +3,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import Head from "next/head";
 import Image from "next/image";
 import { Col, Container, Row, Table } from "react-bootstrap";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTruckFast } from "@fortawesome/free-solid-svg-icons";
 import Button from "@/components/Button";
@@ -24,10 +24,13 @@ const ViewLoad = () => {
   const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [currentLocation, setCurrentLocation] = useState({ lat: 37.0902, lng: -95.7129 });
-  useEffect(() => {
-    const getData = async () => {
+
+  const getData = useCallback(
+    async (loading = false) => {
       try {
-        setIsLoading(true);
+        if (loading) {
+          setIsLoading(true);
+        }
         const { data, status } = await axios.get(`${apis.loads}/${id}`, {
           headers: { Authorization: `Bearer ${access_token}` },
         });
@@ -39,10 +42,23 @@ const ViewLoad = () => {
       } finally {
         setIsLoading(false);
       }
-    };
+    },
+    [access_token,id],
+  )
+  
 
-    getData();
-  }, [access_token, id]);
+
+  useEffect(() => {
+    
+
+    getData(true);
+    const intervalId = setInterval(() => {
+      getData(); 
+    }, 5 * 60 *1000); 
+
+    return () => clearInterval(intervalId);
+
+  }, [getData]);
 
   return (
     <AppLayout>

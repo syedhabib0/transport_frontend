@@ -23,8 +23,8 @@ const TrackLoad = () => {
   const { access_token } = useAppSelector((state) => state.auth);
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    const getData = async () => {
+  const getData = useCallback(
+    async () => {
       try {
         const { data, status } = await axios.get(apis.getOnGoingLoads, {
           params: { per_page: 10 },
@@ -36,9 +36,17 @@ const TrackLoad = () => {
       } catch (error) {
         handleError(error);
       }
-    };
+    },
+    [access_token],
+  )
+  
+
+
+  useEffect(() => {
     getData();
-  }, [access_token]);
+
+   
+  }, [getData]);
 
   return (
     <AppLayout>
@@ -49,7 +57,7 @@ const TrackLoad = () => {
         <Breadcrumb items={breadcrumbItems} />
         <Container className="">
           <Row className="content space-x-5">
-            <Col className="col-md-6 max-h-[500px] overflow-y-scroll flex flex-col bg-grays px-12 pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
+            <Col className="col-md-6 max-h-[500px] min-h-[500px] overflow-y-scroll flex flex-col bg-grays px-12 pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
               <h2 className="text-xl font-bold">Ongoing Trip</h2>
               {data.map((item, key) => [
                 <Card className="flex flex-column w-100  p-4" key={key}>
