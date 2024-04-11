@@ -54,7 +54,7 @@ const ViewLoad = () => {
     getData(true);
     const intervalId = setInterval(() => {
       getData(); 
-    }, 5 * 60 *1000); 
+    },  30 *1000); 
 
     return () => clearInterval(intervalId);
 
