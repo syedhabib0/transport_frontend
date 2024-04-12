@@ -102,7 +102,7 @@ const TrackLoad = () => {
                     </div>
                     <div className="space-x-1 lg:space-x-10 mx-auto text-center">
                       <Button className="bg-gradients border-gradient border-gradient-color text-white">
-                        <Link href={`/load/${item.id}`}>Track Load</Link>
+                        <Link href={`/load/${item.id}/view`}>Track Load</Link>
                       </Button>
                       <Button className="bg-light hover:bg-gray-100 text-black border-gradient border-gradient-color">
                         <Link href={`/load/${item.id}/view`}>View Load</Link>
