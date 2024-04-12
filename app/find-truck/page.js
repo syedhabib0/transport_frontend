@@ -20,7 +20,21 @@ import PlacesAutocomplete from "@/components/PlacesAutoComplete";
 import DriverCard from "@/components/DriverCard";
 import Truck from "@/components/Truck";
 import { useRouter } from "next/navigation";
+import {toast} from "react-toastify"
 const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Find Truck" }];
+
+const initialState = {
+  radius: "300",
+  lift_gate: "0",
+  hazmat: "0",
+  icc_bar: "0",
+  tsa: "0",
+  twic: "0",
+  pallet_jack: "0",
+  true_dock_high: "0",
+  tanker_endorsement: "0",
+  truck_type: "",
+}
 
 const FindTruck = () => {
   const router = useRouter()
@@ -28,18 +42,7 @@ const FindTruck = () => {
   const [truckTypes, setTruckTypes] = useState({});
   const [driverStatus,setDriverStatus] = useState({})
   const [pickup, setPickup] = useState(null);
-  const [formData, setFormData] = useState({
-    radius: "300",
-    lift_gate: "0",
-    hazmat: "0",
-    icc_bar: "0",
-    tsa: "0",
-    twic: "0",
-    pallet_jack: "0",
-    true_dock_high: "0",
-    tanker_endorsement: "0",
-    truck_type: "",
-  });
+  const [formData, setFormData] = useState(initialState);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [currentLocation, setCurrentLocation] = useState({ lat: 37.0902, lng: -95.7129 });
   const [active, setActive] = useState(false);
@@ -90,6 +93,10 @@ const FindTruck = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (!pickup) {
+        toast.error("Please Select a Pickup Location");
+        return
+      }
       const body = {
         ...formData,
         latitude: pickup.lat,
@@ -110,6 +117,9 @@ const FindTruck = () => {
       if (status === 200) {
         setDrivers(data.data);
         setActive((prev) => !prev);
+        setFormData(initialState)
+        setPickup(null)
+        setSelectedOptions([])
       }
     } catch (error) {
       handleError(error);

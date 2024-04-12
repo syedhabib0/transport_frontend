@@ -139,6 +139,7 @@ const Chat = () => {
       const unsubscribe = listenForNewMessages(active, user, handleNewMessage);
       return () => {
         unsubscribe();
+        setMessages([])
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
