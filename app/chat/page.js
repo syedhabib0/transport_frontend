@@ -157,7 +157,7 @@ const Chat = () => {
         <title>Load - IWS</title>
       </Head>
       {isLoading.chatlist ? (
-        <div>isLoading ... </div>
+        <div>Loading ... </div>
       ) : (
         <div className="load max-w-screen-xl mx-10 mt-3 mb-10">
           <Breadcrumb items={breadcrumbItems} />

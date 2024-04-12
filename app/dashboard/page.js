@@ -90,23 +90,23 @@ const Dashboard = () => {
           <Breadcrumb items={breadcrumbItems} />
           <div className="flex flex-col">
             <div className="content">
-              <div className="flex space-x-10 h-52 mt-4">
+              <div className="flex flex-col lg:flex-row lg:space-x-10 h-52 mt-4">
                 <Card
                   title="Total Earning"
-                  className="bg-gradients w-50 text-xl border-none rounded-none py-2 justify-content-center text-center text-white"
+                  className="bg-gradients w-full lg:w-50 text-xl border-none rounded-none py-2 justify-content-center text-center text-white"
                 >
                   <p className="text-white text-4xl font-bold">$ {totalEarning}</p>
                 </Card>
 
                 <Card
                   title="Driver Earning"
-                  className="bg-white w-50 text-xl border-none rounded-none py-2 justify-content-center text-center text-dark"
+                  className="bg-white w-full lg:w-50 text-xl border-none rounded-none py-2 justify-content-center text-center text-dark"
                 >
                   <p className="text-4xl font-bold">${driverEarning}</p>
                 </Card>
               </div>
 
-              <div className="flex space-x-16 mt-4 justify-content-between">
+              <div className="flex flex-col lg:flex-row lg:space-x-16 mt-4 justify-content-between">
                 {dashboardData &&
                   loadStats.map((stat, index) => (
                     <Card
@@ -132,31 +132,7 @@ const Dashboard = () => {
                   ))}
               </div>
             </div>
-
-            {/* <div className="mt-6"> */}
-              {/* <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold text-primary-color">Ongoing Loads</h2>
-                <Link href="/load" className="secondary-color">
-                  <span>
-                    Load More <FontAwesomeIcon icon={faAnglesRight} />
-                  </span>
-                </Link>
-              </div> */}
-              {/* <Table
-                            headers={[
-                                'Load ID',
-                                'Pickup Date',
-                                'Pickup',
-                                'Dropoff',
-                                'Driver Fare',
-                                'Driver',
-                            ]}
-                            data={ongoingLoadsData.map(load =>
-                                Object.values(load),
-                            )}
-                        /> */}
-            {/* </div> */}
-          </div>
+           </div>
         </div>
       </AppLayout>
     </>

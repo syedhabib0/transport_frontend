@@ -57,12 +57,12 @@ const TrackLoad = () => {
         <Breadcrumb items={breadcrumbItems} />
         <Container className="">
           <Row className="content space-x-5">
-            <Col className="col-md-6 max-h-[500px] min-h-[500px] overflow-y-scroll flex flex-col bg-grays px-12 pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
+            <Col sm={12} lg={6} className="max-h-[500px] min-h-[500px] overflow-y-scroll flex flex-col !bg-slate-100 px-12 pb-40 space-y-5 mt-4 p-4  border-gradient border-gradient-color">
               <h2 className="text-xl font-bold">Ongoing Trip</h2>
               {data.map((item, key) => [
                 <Card className="flex flex-column w-100  p-4" key={key}>
                   <div className="">
-                    <div className="flex flex-row">
+                    <div className="flex flex-col lg:flex-row">
                       <div className="m-2 h-16 w-16">
                         <Image
                           src={item.driver.profile.profile_photo}
@@ -92,11 +92,11 @@ const TrackLoad = () => {
                     <div className="p-2">
                       <FontAwesomeIcon icon={faBookmark} className="primary-color" /> {item?.pickup_date}{" "}
                     </div>
-                    <div className="flex flex-row p-2">
-                      <div>
+                    <div className="flex flex-col lg:flex-row p-2 ">
+                      <div className="flex-1">
                         <FontAwesomeIcon icon={faMap} className="primary-color" /> {item?.pickup_location}{" "}
                       </div>
-                      <div>
+                      <div className="flex-1">
                         <FontAwesomeIcon icon={faMap} className="primary-color" /> {item?.dropoff_location}{" "}
                       </div>
                     </div>
@@ -113,7 +113,7 @@ const TrackLoad = () => {
               ])}
             </Col>
 
-            <Col className=" px-0 w-full bg-white border-gradient border-gradient-color">
+            <Col className=" !mx-0 !px-0 max-h-[500px] min-h-[500px] w-full bg-white border-gradient border-gradient-color">
               <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}>
                 <Map
                   center={currentLocation}

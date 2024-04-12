@@ -74,7 +74,7 @@ const EditDriver = () => {
   }, [access_token, id]);
 
   if (isLoading) {
-    return <div>isLoading ...</div>;
+    return <div>Loading ...</div>;
   }
 
   return (

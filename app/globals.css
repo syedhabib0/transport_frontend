@@ -216,3 +216,38 @@ a{
     color: inherit !important;
     text-decoration: none !important;
 }
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+
+  /* Track */
+::-webkit-scrollbar-track {
+    background: linear-gradient(to right, #ff0000, #0000ff); /* Change the gradient colors as needed */
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888; /* You can change the color of the scrollbar handle */
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; /* You can change the color of the scrollbar handle on hover */
+  }
+
+
+  .scrollable-container {
+    overflow-y: auto; /* This makes the container scrollable vertically */
+    scrollbar-width: thin; /* For Firefox */
+  }
+  
+  /* For Webkit based browsers like Chrome and Safari */
+  .scrollable-container::-webkit-scrollbar {
+    width: 12px; /* You can adjust the width of the scrollbar as needed */
+  }
+  

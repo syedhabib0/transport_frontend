@@ -136,7 +136,7 @@ const FindTruck = () => {
   };
 
   if (!isLoaded) {
-    return <div>Is Loading...</div>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -149,7 +149,7 @@ const FindTruck = () => {
         <Container className="">
           <Row className="content space-x-5">
             {!active ? (
-              <Col className="col-md-5 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
+              <Col md={12} lg={5} className="md:mr-2 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
                 <h2 className="text-xl font-bold">Origin Points</h2>
 
                 <PlacesAutocomplete
@@ -167,13 +167,13 @@ const FindTruck = () => {
                   onChange={handleChange}
                   name="radius"
                 />
-                <Form.Group className="flex flex-row space-x-5">
-                  <h2 className="text-xl font-bold">Truck Features</h2>
+                <Form.Group className="flex flex-col space-x-5">
+                  <label className="form-label">Truck Features</label>
                   <select
-                    className="w-50"
                     onChange={handleChange}
                     name="truck_type"
                     value={formData.truck_type}
+                    className="!m-0"
                   >
                     <option value="find truck" key="0" selected disabled>
                       Find Truck
@@ -185,7 +185,7 @@ const FindTruck = () => {
                     ))}
                   </select>
                 </Form.Group>
-                <div className="flex flex-row flex-wrap space-x-5 space-y-3">
+                <div className="flex flex-col md:flex-row md:flex-wrap gap-2">
                   {Object.keys(trucksFeatures).map((item) => (
                     <Form.Group key={item}>
                       <InputCustom
@@ -214,7 +214,7 @@ const FindTruck = () => {
                 </div>
               </Col>
             ) : (
-              <Col className="col-md-6 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
+              <Col md={12} lg={5} className="md:mr-2 flex flex-col pb-40 space-y-5 mt-4 p-4 bg-white border-gradient border-gradient-color">
                 <div className="w-full">
                   <h2 className="text-xl font-bold">{drivers.length} Drivers Found</h2>
                   <button type="button" onClick={() => setActive((prev) => !prev)}>
@@ -243,7 +243,7 @@ const FindTruck = () => {
             )}
 
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}>
-              <Col className="mt-4 px-0 w-full bg-white border-gradient border-gradient-color">
+              <Col  className="!mx-0  mt-4 px-0 w-full bg-white border-gradient border-gradient-color  min-h-[500px]">
                 <Map
                   center={currentLocation}
                   defaultZoom={4}

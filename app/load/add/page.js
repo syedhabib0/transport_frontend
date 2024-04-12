@@ -104,7 +104,7 @@ const AddLoad = () => {
   });
 
   if (!isLoaded) {
-    return <div>Is Loading...</div>;
+    return <div>Loading...</div>;
   }
 
 

@@ -66,7 +66,7 @@ const ViewLoad = () => {
         <title>View - Track Load - IWS</title>
       </Head>
       {isLoading ? (
-        <div>isLoading ...</div>
+        <div>Loading ...</div>
       ) : (
         <div className="find-truck max-w-screen-xl mx-10 mt-3 mb-10">
           <Breadcrumb items={breadcrumbItems} />
