@@ -88,10 +88,26 @@ const Drivers = () => {
   };
 
   
-  const handleFilter =(e) => {
+  const handleFilter = async (e) => {
     e.preventDefault();
     try {
-      
+      const params = formData
+      console.log(params);
+      Object.keys(params).forEach(key => {
+        if (params[key] === "") {
+          delete params[key];
+        }
+      })
+      const {data, status} = await axios.get(apis.drivers, {
+        headers: { Authorization: `Bearer ${access_token}` },
+        params:formData
+      });
+      if (status === 200) {
+        setDrivers(data.data.drivers);
+        setCurrentPage(data.data.current_page);
+        setTotalPages(data.data.last_page);
+      }
+
     } catch (error) {
       handleError(error) 
     }
@@ -137,6 +153,18 @@ const Drivers = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
+
+
+  const handleReset = async () => {
+    try {
+      await fetchDrivers()
+      setFormData(initialState)
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -217,7 +245,7 @@ const Drivers = () => {
                 <hr />
                 <Row className="">
                   <Col className="space-x-5 flex">
-                    <SubmitButton type="button" className="bg-gradients w-40" onClick={()=>setFormData(initialState)}>Reset</SubmitButton>
+                    <SubmitButton type="button" className="bg-gradients w-40" onClick={()=>handleReset()}>Reset</SubmitButton>
                     <SubmitButton type="submit" className="bg-white !text-black primary-color w-40 border-gradient border-gradient-color">
                       <FontAwesomeIcon icon={faFilter} className="primary-color" /> Filter
                     </SubmitButton>
