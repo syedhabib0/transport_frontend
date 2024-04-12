@@ -96,7 +96,14 @@ const FindTruck = () => {
         longitude: pickup.lng,
         driver_status: selectedOptions.map((item) => item.value),
       };
-
+      Object.keys(body).forEach(key => {
+        if (key === "truck_type" && body[key] === "") {
+          body[key] = "all"
+        }
+        if (body[key] === "0") {
+          delete body[key]
+        }
+      })
       const { data, status } = await axios.post(apis.searchdrivers, body, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
