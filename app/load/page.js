@@ -44,13 +44,13 @@ const Load = () => {
   const [formData, setFormData] = useState(initialState);
 
   // Function to handle form field changes
-  const deleteLoad = (id) => {
-    console.log("Deleting Item: ", id);
-  };
+  // const deleteLoad = (id) => {
+  //   console.log("Deleting Item: ", id);
+  // };
   // Function to handle form field changes
-  const editLoad = (id) => {
-    console.log("Editing Item: ", id);
-  };
+  // const editLoad = (id) => {
+  //   console.log("Editing Item: ", id);
+  // };
   // Function to handle form field changes
   const viewLoad = (id) => {
     router.push(`/load/${id}/view`)
@@ -161,12 +161,12 @@ const Load = () => {
           <button className="primary-color mx-1" onClick={() => viewLoad(load.id)}>
             <FaEye />
           </button>
-          <button className="primary-color mx-1" onClick={() => editLoad(load.id)}>
+          {/* <button className="primary-color mx-1" onClick={() => editLoad(load.id)}>
             <FaEdit />
           </button>
           <button className="primary-color mx-1" onClick={() => deleteLoad(load.id)}>
             <FaTrash />
-          </button>
+          </button> */}
         </>
       ),
     }));

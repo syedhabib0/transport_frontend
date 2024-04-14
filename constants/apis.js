@@ -1,7 +1,7 @@
 export const baseUrl =  `${process.env.NEXT_PUBLIC_BACKEND_URL}api`
 
 const apis =  {
-    login: `${baseUrl}/login`,
+    login: `${baseUrl}/web-login`,
     loads:`${baseUrl}/loads`,
     drivers:`${baseUrl}/drivers`,
     dashboardStates:`${baseUrl}/dashboard/stats`,

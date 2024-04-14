@@ -43,22 +43,33 @@ const ViewLoad = () => {
         setIsLoading(false);
       }
     },
-    [access_token,id],
-  )
-  
-
+    [access_token, id]
+  );
 
   useEffect(() => {
-    
-
     getData(true);
     const intervalId = setInterval(() => {
-      getData(); 
-    },  30 *1000); 
+      getData();
+    },  30 *1000);
 
     return () => clearInterval(intervalId);
-
   }, [getData]);
+
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     if (!isLoading) {
+  //       setData((prev) => ({
+  //         ...prev,
+  //         current_location: {
+  //           latitude: String(parseFloat(prev?.current_location?.latitude) + 0.001),
+  //           longitude: String(parseFloat(prev?.current_location?.longitude) + 0.001),
+  //         },
+  //       }));
+  //     }
+  //   }, 1000);
+
+  //   return () => clearInterval(intervalId);
+  // }, [isLoading]);
 
   return (
     <AppLayout>

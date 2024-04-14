@@ -17,6 +17,7 @@ import UpdateDriverStatusModal from "@/components/Modal/UpdateDriverStatusModal"
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
 import { handleError } from "@/utils/functions";
+import { toast } from "react-toastify";
 const initialState = {
   name: "",
   email: "",
@@ -25,7 +26,7 @@ const initialState = {
 };
 const Drivers = () => {
   const { access_token } = useAppSelector((state) => state.auth);
-  const [driverStatusOption, setDriverStatusOption] = useState({})
+  const [driverStatusOption, setDriverStatusOption] = useState({});
   const [drivers, setDrivers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -33,19 +34,13 @@ const Drivers = () => {
   const [driverStatus, setDriverStatus] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState(initialState);
-  
 
   const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Drivers" }];
 
-
-  const handleChange  = (e) => {
-    const {name, value} = e.target
-    setFormData( prev => ({...prev, [name]:value}))
-  }
-  
-
-  
-
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleShowModal = (driverId, status) => {
     setSelectedDriverId(driverId);
@@ -87,36 +82,53 @@ const Drivers = () => {
     router.push(`/drivers/${id}/edit`);
   };
 
-  
+  const updateBlockStatus = async (id, status) => {
+    try {
+      setDrivers((prev) =>
+        prev.map((item) =>
+          item.driver.user_id === id ? { ...item, driver: { ...item.driver, is_blocked: status } } : item
+        )
+      );
+      const { data, status: statusCode } = await axios.post(
+        `${apis.drivers}/${id}/block`,
+        { is_blocked: status },
+        { headers: { Authorization: `Bearer ${access_token}` } }
+      );
+      if (statusCode === 200) {
+        toast.success(data.message);
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   const handleFilter = async (e) => {
     e.preventDefault();
     try {
-      const params = formData
+      const params = formData;
       console.log(params);
-      Object.keys(params).forEach(key => {
+      Object.keys(params).forEach((key) => {
         if (params[key] === "") {
           delete params[key];
         }
-      })
-      const {data, status} = await axios.get(apis.drivers, {
+      });
+      const { data, status } = await axios.get(apis.drivers, {
         headers: { Authorization: `Bearer ${access_token}` },
-        params:formData
+        params: formData,
       });
       if (status === 200) {
         setDrivers(data.data.drivers);
         setCurrentPage(data.data.current_page);
         setTotalPages(data.data.last_page);
       }
-
     } catch (error) {
-      handleError(error) 
+      handleError(error);
     }
-  }
-
+  };
 
   const fetchDrivers = async () => {
     try {
-      const {data, status} = await axios.get(apis.drivers, {
+      const { data, status } = await axios.get(apis.drivers, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       if (status === 200) {
@@ -124,10 +136,10 @@ const Drivers = () => {
         setCurrentPage(data.data.current_page);
         setTotalPages(data.data.last_page);
       }
-      
+
       // setDriverStatus(drivers.driver && drivers.driver.status ? drivers.driver.status : "Not Available");
     } catch (error) {
-      handleError(error)
+      handleError(error);
     }
   };
 
@@ -139,32 +151,31 @@ const Drivers = () => {
   useEffect(() => {
     const getDriverStatus = async () => {
       try {
-        const {data,status} = await axios.get(apis.getDriverStatus,{headers:{Authorization:`Bearer ${access_token}`}})
+        const { data, status } = await axios.get(apis.getDriverStatus, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
         if (status === 200) {
-          setDriverStatusOption(data.data)
+          setDriverStatusOption(data.data);
         }
       } catch (error) {
-        handleError(error)   
+        handleError(error);
       }
-    }
-    getDriverStatus()
-  }, [access_token])
+    };
+    getDriverStatus();
+  }, [access_token]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-
-
   const handleReset = async () => {
     try {
-      await fetchDrivers()
-      setFormData(initialState)
+      await fetchDrivers();
+      setFormData(initialState);
     } catch (error) {
-      handleError(error)
+      handleError(error);
     }
-  }
-
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -185,7 +196,6 @@ const Drivers = () => {
     }
   };
   const router = useRouter();
-
   return (
     <AppLayout>
       <Head>
@@ -229,14 +239,12 @@ const Drivers = () => {
                   <Col md={4} className="mb-6">
                     <FormGroup>
                       <Label htmlFor="status">Status:</Label>
-                      <Form.Select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                      >
+                      <Form.Select name="status" value={formData.status} onChange={handleChange}>
                         <option value="">Select Status</option>
-                        {Object.keys(driverStatusOption).map(key => (
-                           <option value={key} key={key}>{driverStatusOption[key]}</option>
+                        {Object.keys(driverStatusOption).map((key) => (
+                          <option value={key} key={key}>
+                            {driverStatusOption[key]}
+                          </option>
                         ))}
                       </Form.Select>
                     </FormGroup>
@@ -245,8 +253,13 @@ const Drivers = () => {
                 <hr />
                 <Row className="">
                   <Col className="space-x-5 flex">
-                    <SubmitButton type="button" className="bg-gradients w-40" onClick={()=>handleReset()}>Reset</SubmitButton>
-                    <SubmitButton type="submit" className="bg-white !text-black primary-color w-40 border-gradient border-gradient-color">
+                    <SubmitButton type="button" className="bg-gradients w-40" onClick={() => handleReset()}>
+                      Reset
+                    </SubmitButton>
+                    <SubmitButton
+                      type="submit"
+                      className="bg-white !text-black primary-color w-40 border-gradient border-gradient-color"
+                    >
                       <FontAwesomeIcon icon={faFilter} className="primary-color" /> Filter
                     </SubmitButton>
                   </Col>
@@ -262,7 +275,6 @@ const Drivers = () => {
                   <Link href={"/drivers/create"}>
                     <SubmitButton className="bg-gradients w-40">Add Driver</SubmitButton>
                   </Link>
-                 
                 </div>
               </div>
               {/* <NewLoadModal show={showLoadModal} handleClose={handleCloseLoadModal} /> */}
@@ -324,6 +336,13 @@ const Drivers = () => {
                             <Dropdown.Menu>
                               <Dropdown.Item onClick={() => handleView(driver.id)}>View</Dropdown.Item>
                               <Dropdown.Item onClick={() => handleEdit(driver.id)}>Edit</Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() =>
+                                  updateBlockStatus(driver.id, driver?.driver?.is_blocked == 0 ? 1 : 0)
+                                }
+                              >
+                                {driver.driver.is_blocked == 0 ? "Block" : "Unblock"}
+                              </Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
                         </td>

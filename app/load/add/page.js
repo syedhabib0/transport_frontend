@@ -13,21 +13,21 @@ import { Container, Button, Form, InputGroup, FormGroup } from "react-bootstrap"
 import * as Yup from "yup";
 import { useLoadScript } from "@react-google-maps/api";
 import { toast } from "react-toastify";
-import  {useSearchParams} from "next/navigation"
+import { useSearchParams } from "next/navigation";
 const breadcrumbItems = [
   { text: "Dashboard", link: "/dashboard" },
   { text: "Load", link: "/load" },
   { text: "add" },
 ];
 const AddLoad = () => {
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
 
   const { access_token } = useAppSelector((state) => state.auth);
   const [driverOptions, setDriverOptions] = useState([]);
   const [pickup, setPickup] = useState(null);
   const [dropoff, setDropoff] = useState(null);
-  const [pickupAddress , setPickupAddress] = useState(null)
-  const [dropoffAddress , setDropoffAddress] = useState(null)
+  const [pickupAddress, setPickupAddress] = useState(null);
+  const [dropoffAddress, setDropoffAddress] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -36,6 +36,8 @@ const AddLoad = () => {
       pickup_date: "",
       total_fare: "",
       driver_fare: "",
+      pickup_time: "",
+      dropoff_time: "",
     },
     validationSchema: Yup.object({
       driver: Yup.string().required("Driver is required"),
@@ -47,34 +49,38 @@ const AddLoad = () => {
       driver_fare: Yup.number()
         .required("Driver fare is required")
         .min(0, "Driver fare must be greater than or equal to 0"),
+      pickup_time: Yup.string().required("Pick Up Time is Required "),
+      dropoff_time: Yup.string().required("Drop Off Time is Required "),
     }),
     onSubmit: async (values) => {
-        if (!pickup) {
-            toast.error("Pickup Location is Required")
-            return
-        }
-        if (!dropoff) {
-            toast.error("Dropoff Location is Required")
-            return
-        }
-        const body = {
-            ...values,
-            pickup_latitude: pickup.lat,
-            pickup_longitude:pickup.lng,
-            drop_off_latitude:dropoff.lat,
-            drop_off_longitude:dropoff.lng,
-            pickup:pickupAddress,
-            drop_off:dropoffAddress,
-        }
+      if (!pickup) {
+        toast.error("Pickup Location is Required");
+        return;
+      }
+      if (!dropoff) {
+        toast.error("Dropoff Location is Required");
+        return;
+      }
+      const body = {
+        ...values,
+        pickup_latitude: pickup.lat,
+        pickup_longitude: pickup.lng,
+        drop_off_latitude: dropoff.lat,
+        drop_off_longitude: dropoff.lng,
+        pickup: pickupAddress,
+        drop_off: dropoffAddress,
+      };
       console.log(body);
-        try {
-            const {data ,status} = await axios.post(apis.loads,body,{headers:{Authorization:`Bearer ${access_token}`}})
-            if (status === 200) {
-                toast.success("Load Added Successfully");
-            }
-        } catch (error) {
-         handleError(error)   
+      try {
+        const { data, status } = await axios.post(apis.loads, body, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+        if (status === 200) {
+          toast.success("Load Added Successfully");
         }
+      } catch (error) {
+        handleError(error);
+      }
     },
   });
 
@@ -87,7 +93,7 @@ const AddLoad = () => {
         if (status === 200) {
           setDriverOptions(data.data);
           console.log(searchParams.get("driver"));
-          formik.setFieldValue("driver",searchParams.get("driver"),true)
+          formik.setFieldValue("driver", searchParams.get("driver"), true);
         }
       } catch (error) {
         handleError(error);
@@ -95,8 +101,6 @@ const AddLoad = () => {
     };
     getData();
   }, [access_token]);
-
- 
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
@@ -107,7 +111,6 @@ const AddLoad = () => {
     return <div>Loading...</div>;
   }
 
-
   return (
     <AppLayout>
       <Head>
@@ -117,8 +120,8 @@ const AddLoad = () => {
         <Breadcrumb items={breadcrumbItems} />
         <Container className="space-y-5 ">
           <div className="bg-white p-3 h-auto">
-            <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} setAddress={setPickupAddress}/>
-            <PlacesAutocomplete setSelected={setDropoff} label={"DropOff"} setAddress={setDropoffAddress}/>
+            <PlacesAutocomplete setSelected={setPickup} label={"Pickup"} setAddress={setPickupAddress} />
+            <PlacesAutocomplete setSelected={setDropoff} label={"DropOff"} setAddress={setDropoffAddress} />
             <Form onSubmit={formik.handleSubmit}>
               <FormGroup className="mb-3">
                 <Form.Label htmlFor="driver">Driver</Form.Label>
@@ -131,9 +134,7 @@ const AddLoad = () => {
                     value={formik.values.driver}
                     disabled={searchParams.get("driver")}
                   >
-                    <option value="" >
-                      Select a driver
-                    </option>
+                    <option value="">Select a driver</option>
                     {driverOptions.map((driverOption) => (
                       <option key={driverOption.id} value={driverOption.id}>
                         {driverOption.full_name}
@@ -175,6 +176,38 @@ const AddLoad = () => {
                 </InputGroup>
                 {formik.touched.pickup_date && formik.errors.pickup_date && (
                   <Form.Text className="text-danger">{formik.errors.pickup_date}</Form.Text>
+                )}
+              </FormGroup>
+              <FormGroup className="mb-3">
+                <Form.Label htmlFor="pickup_time">Pickup Time</Form.Label>
+                <InputGroup className="mb-3">
+                  <Form.Control
+                    type="time"
+                    id="pickup_time"
+                    name="pickup_time"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.pickup_time}
+                  />
+                </InputGroup>
+                {formik.touched.pickup_time && formik.errors.pickup_time && (
+                  <Form.Text className="text-danger">{formik.errors.pickup_time}</Form.Text>
+                )}
+              </FormGroup>
+              <FormGroup className="mb-3">
+                <Form.Label htmlFor="dropoff_time">Dropoff Time</Form.Label>
+                <InputGroup className="mb-3">
+                  <Form.Control
+                    type="time"
+                    id="dropoff_time"
+                    name="dropoff_time"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.dropoff_time}
+                  />
+                </InputGroup>
+                {formik.touched.dropoff_time && formik.errors.dropoff_time && (
+                  <Form.Text className="text-danger">{formik.errors.dropoff_time}</Form.Text>
                 )}
               </FormGroup>
               <FormGroup className="mb-3">
@@ -224,4 +257,3 @@ const AddLoad = () => {
 };
 
 export default AddLoad;
-
