@@ -10,6 +10,7 @@ const apis =  {
     bulkDriverCreate : `${baseUrl}/drivers/create/bulk`,
     driversLocations:`${baseUrl}/drivers/search-driver-locations`,
     getTruckTypes: `${baseUrl}/truck/get-truck-types`,
+    getTruckTypesFindTruck: `${baseUrl}/truck/get-truck-types-for-find-truck`,
     getDriverStatus: `${baseUrl}/get-driver-statuses`,
     getDriverDropDown : `${baseUrl}/get-driver-dropdown`,
     getLoadStatus : `${baseUrl}/get-load-statuses`,

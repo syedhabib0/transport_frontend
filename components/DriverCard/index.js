@@ -51,9 +51,9 @@ const DriverCard = ({ data, assignLoad }) => {
             <p className="primary-color font-semibold">
               {data?.driver?.user?.first_name}, {data?.driver?.user?.last_name}
             </p>
-            {/* <p className=" text-slate-400">
-              {data?.email}, {data?.phone}
-            </p> */}
+            <p className=" text-slate-400">
+              {data?.driver?.user?.email}, {data?.driver?.user?.phone}
+            </p>
           </div>
         </div>
         {/* <hr /> */}

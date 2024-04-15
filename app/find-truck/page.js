@@ -54,7 +54,7 @@ const FindTruck = () => {
       try {
         const [{ data: driverStatus,status:driverCode }, { data, status }] = await Promise.all([
           axios.get(apis.getDriverStatus, { headers: { Authorization: `Bearer ${access_token}` } }),
-          axios.get(apis.getTruckTypes, {headers: { Authorization: `Bearer ${access_token}` },}),
+          axios.get(apis.getTruckTypesFindTruck, {headers: { Authorization: `Bearer ${access_token}` },}),
         ]);
         if (status === 200) {
           setTruckTypes(data.data);

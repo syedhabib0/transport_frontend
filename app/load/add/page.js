@@ -38,11 +38,13 @@ const AddLoad = () => {
       driver_fare: "",
       pickup_time: "",
       dropoff_time: "",
+      delivery_date: "",
     },
     validationSchema: Yup.object({
       driver: Yup.string().required("Driver is required"),
       bill_id: Yup.string().required("Bill ID is required"),
       pickup_date: Yup.date().required("Pickup date is required"),
+      delivery_date: Yup.date().required("Delivery date is required"),
       total_fare: Yup.number()
         .required("Total fare is required")
         .min(0, "Total fare must be greater than or equal to 0"),
@@ -176,6 +178,22 @@ const AddLoad = () => {
                 </InputGroup>
                 {formik.touched.pickup_date && formik.errors.pickup_date && (
                   <Form.Text className="text-danger">{formik.errors.pickup_date}</Form.Text>
+                )}
+              </FormGroup>
+              <FormGroup className="mb-3">
+                <Form.Label htmlFor="delivery_date">Delivery Date</Form.Label>
+                <InputGroup className="mb-3">
+                  <Form.Control
+                    type="date"
+                    id="delivery_date"
+                    name="delivery_date"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.delivery_date}
+                  />
+                </InputGroup>
+                {formik.touched.delivery_date && formik.errors.delivery_date && (
+                  <Form.Text className="text-danger">{formik.errors.delivery_date}</Form.Text>
                 )}
               </FormGroup>
               <FormGroup className="mb-3">
