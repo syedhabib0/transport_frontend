@@ -1,8 +1,7 @@
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 
-const DirectionRenderer = ({pickup,dropoff}) => {
-    
+const DirectionRenderer = ({ pickup, dropoff }) => {
   const map = useMap();
   const routesLibrary = useMapsLibrary("routes");
   const [directionService, setDirectionService] = useState();
@@ -15,7 +14,6 @@ const DirectionRenderer = ({pickup,dropoff}) => {
 
   useEffect(() => {
     if (!directionRenderer || !directionService) return;
-
     directionService
       .route({
         origin: pickup,
@@ -24,14 +22,12 @@ const DirectionRenderer = ({pickup,dropoff}) => {
       })
       .then((response) => {
         directionRenderer.setDirections(response);
-      }).catch((error) => console.log(error))
-
-
-
-  }, [directionRenderer, directionService,pickup,dropoff]);
+        console.log(response);
+      })
+      .catch((error) => console.log(error));
+  }, [directionRenderer, directionService, pickup, dropoff]);
 
   return <></>;
 };
 
-
-export default DirectionRenderer
+export default DirectionRenderer;
