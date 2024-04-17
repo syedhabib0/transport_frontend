@@ -18,6 +18,7 @@ import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
 import { handleError } from "@/utils/functions";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const initialState = {
   bill_id: "",
@@ -31,11 +32,11 @@ const initialState = {
 };
 
 const Load = () => {
-  const router = useRouter()
+  const router = useRouter();
   const { access_token } = useAppSelector((state) => state.auth);
 
   const breadcrumbItems = [{ text: "Dashboard", link: "/dashboard" }, { text: "Load" }];
- 
+
   const [driverOptions, setDriverOptions] = useState([]);
   const [loadStatus, setLoadStatus] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,16 +45,24 @@ const Load = () => {
   const [formData, setFormData] = useState(initialState);
 
   // Function to handle form field changes
-  // const deleteLoad = (id) => {
-  //   console.log("Deleting Item: ", id);
-  // };
+  const deleteLoad = async (id) => {
+    try {
+      setLoads((prev) => prev.filter((item) => item.id !== id));
+      const {data,status} = await axios.delete(`${apis.loads}/${id}`,{headers:{Authorization:`Bearer ${access_token}`}})
+      if (status === 200) {
+        toast.success(data.message)
+      }
+    } catch (error) { 
+      handleError(error);
+    }
+  };
   // Function to handle form field changes
   // const editLoad = (id) => {
   //   console.log("Editing Item: ", id);
   // };
   // Function to handle form field changes
   const viewLoad = (id) => {
-    router.push(`/load/${id}/view`)
+    router.push(`/load/${id}/view`);
   };
   // Function to handle form field changes
   const handleInputChange = (e) => {
@@ -65,27 +74,27 @@ const Load = () => {
   };
 
   const handleShowModal = () => {
-    router.push("/load/add")
-  }
+    router.push("/load/add");
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const {data,status} = await axios.get(apis.loads, {
+        const { data, status } = await axios.get(apis.loads, {
           params: formData,
           headers: { Authorization: `Bearer ${access_token}` },
         });
         if (status === 200) {
-            setLoads(data.data);
-            setCurrentPage(data.current_page);
-            setTotalPages(data.last_page);
+          setLoads(data.data);
+          setCurrentPage(data.current_page);
+          setTotalPages(data.last_page);
         }
       } catch (error) {
         handleError(error);
       }
     };
     fetchData(currentPage);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, access_token]);
 
   useEffect(() => {
@@ -116,18 +125,18 @@ const Load = () => {
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
     try {
-        const {data,status} = await axios.get(apis.loads, {
-          params: formData,
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-        if (status === 200) {
-            setLoads(data.data);
-            setCurrentPage(data.current_page);
-            setTotalPages(data.last_page);
-        }
-      } catch (error) {
-        handleError(error);
+      const { data, status } = await axios.get(apis.loads, {
+        params: formData,
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+      if (status === 200) {
+        setLoads(data.data);
+        setCurrentPage(data.current_page);
+        setTotalPages(data.last_page);
       }
+    } catch (error) {
+      handleError(error);
+    }
   };
 
   // Initialize ongoingLoadsData as an empty array
@@ -145,7 +154,7 @@ const Load = () => {
 
   //  bill_id :  "5415235" created_at :  "2024-01-24T23:02:51.000000Z" delivery_date :  null destination :  null driver :  {id: 2, user_id: 32, profile_id: 25, hired_by: 1, status: 'active', …} driver_fare :  "2100.00" driver_id :  2 dropoff_location :  "Attock" id :  2 load_type :  null pickup_date :  "2024-01-26" pickup_location :  "Karachi" status :  "available" total_fare :  "12000.00" unit_no :  null updated_at :  "2024-01-24T23:02:51.000000Z" user_id :  1 weight :  null
   // Check if the 'loads' array exists in loads
-  if (loads  && Array.isArray(loads)) {
+  if (loads && Array.isArray(loads)) {
     ongoingLoadsData = loads.map((load) => ({
       unitNo: load.id,
       billId: load.bill_id,
@@ -163,16 +172,14 @@ const Load = () => {
           </button>
           {/* <button className="primary-color mx-1" onClick={() => editLoad(load.id)}>
             <FaEdit />
-          </button>
+          </button> */}
           <button className="primary-color mx-1" onClick={() => deleteLoad(load.id)}>
             <FaTrash />
-          </button> */}
+          </button>
         </>
       ),
     }));
   }
-
-  
 
   return (
     <AppLayout>
@@ -288,7 +295,11 @@ const Load = () => {
                 </Row>
                 <Row className="">
                   <Col className="">
-                    <SubmitButton type="button" className="bg-gradients w-40" onClick={() =>setFormData(initialState)}>
+                    <SubmitButton
+                      type="button"
+                      className="bg-gradients w-40"
+                      onClick={() => setFormData(initialState)}
+                    >
                       Reset
                     </SubmitButton>
                   </Col>
