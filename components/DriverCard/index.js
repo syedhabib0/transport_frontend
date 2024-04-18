@@ -9,7 +9,8 @@ import { MdOutlineLocalPhone } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/hooks";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
-import { kmToMiles } from "@/utils/functions";
+import { handleError, kmToMiles } from "@/utils/functions";
+import { insertFirstMessage } from "@/utils/firebase/chat";
 
 const DriverCardNew = ({ data, assignLoad, pickup }) => {
   const router = useRouter();
