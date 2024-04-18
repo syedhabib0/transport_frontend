@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/hooks";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { handleError, kmToMiles } from "@/utils/functions";
-import { insertFirstMessage } from "@/utils/firebase/chat";
+import { insertFirstMessage, messageTypes } from "@/utils/firebase/chat";
 
 const DriverCardNew = ({ data, assignLoad, pickup }) => {
   const router = useRouter();
