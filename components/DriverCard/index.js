@@ -1,16 +1,17 @@
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import Button from "../Button";
-import Card from "../Card";
+import Image from "next/image";
 import avatar from "@/public/assets/images/drivers.png";
-import { handleError, kmToMiles } from "@/utils/functions";
-import { insertFirstMessage, messageTypes } from "@/utils/firebase/chat";
-import { useAppSelector } from "@/lib/hooks";
+import { BsChat } from "react-icons/bs";
+import { GiWeightScale } from "react-icons/gi";
+import { CiDeliveryTruck } from "react-icons/ci";
+import { FaRoad } from "react-icons/fa";
+import { MdOutlineLocalPhone } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/lib/hooks";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import { kmToMiles } from "@/utils/functions";
 
-const DriverCard = ({ data, assignLoad, pickup }) => {
-  console.log(data);
+const DriverCardNew = ({ data, assignLoad, pickup }) => {
   const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
   const routesLibrary = useMapsLibrary("routes");
@@ -57,68 +58,77 @@ const DriverCard = ({ data, assignLoad, pickup }) => {
   };
 
   return (
-    <Card className="flex flex-column w-100  p-4">
-      <div className="">
-        <div className="flex flex-row">
-          <div className="bg-primary rounded-full p-2 m-2 h-16 w-16">
-            <Image
-              src={avatar}
-              width={50}
-              height={50}
-              alt="User Avatar"
-              roundedCircle
-              className="me-2"
-              style={{
-                maxWidth: "50px",
-                maxHeight: "50px",
-              }}
-            />
-          </div>
-
-          <div className="p-2">
-            {data?.driver?.vehicles && data?.driver?.vehicles?.length > 0 && (
-              <h2 className="font-bold text-lg">{data.driver?.vehicles[0].unit_number} Unit</h2>
-            )}
-
-            <p className="primary-color font-semibold m-0">
-              {data?.driver?.user?.first_name}, {data?.driver?.user?.last_name}
-            </p>
-            <p className=" text-slate-400 m-0"> Distance: {miles}</p>
-            <p className=" text-slate-400 m-0">
-              {data?.driver?.user?.email}, {data?.driver?.user?.phone}
-            </p>
-          </div>
+    <div className="bg-white rounded-md flex flex-col border border-gray-400">
+      <div className="flex gap-2 px-3 pt-3 pb-2 ">
+        <div className="h-[50px] w-[50px] flex-none bg-gradients rounded-full">
+          <Image
+            src={avatar}
+            width={50}
+            height={50}
+            alt="User Avatar"
+            roundedCircle
+            className="me-2 object-contain"
+            style={{
+              maxWidth: "50px",
+              maxHeight: "50px",
+            }}
+          />
         </div>
-        <hr />
-        {data?.driver?.vehicles && data?.driver?.vehicles?.length > 0 && (
-          <>
-            <span className="badge text-bg-primary mr-1">Vehicle: {data.driver?.vehicles[0].vehicle_type}</span>
-            <span className="badge text-bg-secondary mr-1">
-              Payload Weight: {data.driver?.vehicles[0].payload_weight} Lbs
+        <div className="">
+          {data?.driver?.vehicles && data?.driver?.vehicles?.length > 0 && (
+            <p className="text-black font-semibold m-0">{data.driver?.vehicles[0].unit_number} Unit</p>
+          )}
+          <p className="primary-color font-semibold m-0">
+            {data?.driver?.user?.first_name}, {data?.driver?.user?.last_name}
+          </p>
+          <div className="space-x-2">
+            <span className="badge text-bg-success">{data?.driver?.status}</span>
+            <span className="badge text-bg-warning">{"-"} Loads</span>
+            <span
+              onClick={handleChat}
+              className="badge text-bg-info cursor-pointer !inline-flex items-center"
+            >
+              <BsChat />
+              Chat
             </span>
-            <span className="badge text-bg-success mr-1">Make: {data.driver?.vehicles[0].make}</span>
-            <span className="badge text-bg-info mr-1">Model:{data.driver?.vehicles[0].model}</span>
-          </>
-        )}
-        <div className="space-x-1 lg:space-x-10 mx-auto text-center mt-2">
-          <Button
-            onClick={() => assignLoad(data)}
-            type="button"
-            className="bg-gradients border-gradient border-gradient-color text-white"
-          >
-            Assign Load
-          </Button>
-          <Button
-            type="button"
-            onClick={handleChat}
-            className="bg-light hover:bg-gray-100 text-black border-gradient border-gradient-color"
-          >
-            Chat
-          </Button>
+          </div>
         </div>
       </div>
-    </Card>
+      <hr />
+      <div className="flex px-3 pb-3 pt-1 gap-1 justify-between">
+        <div>
+          <div className="space-x-3 flex flex-wrap ">
+            {data?.driver?.vehicles && data?.driver?.vehicles?.length > 0 && (
+              <span className="flex items-center gap-1 text-slate-500 text-xs">
+                <GiWeightScale icon="fa-solid fa-scale-unbalanced-flip" /> {data.driver?.vehicles[0].payload_weight} lbs
+              </span>
+            )}
+
+            <span className="flex items-center gap-1 text-slate-500 text-xs">
+              <CiDeliveryTruck icon="fa-solid fa-scale-unbalanced-flip" /> - * - * - inches
+            </span>
+          </div>
+          <div className="space-x-3 flex flex-wrap ">
+            <span className="flex items-center gap-1 text-slate-500 text-xs">
+              <FaRoad icon="fa-solid fa-scale-unbalanced-flip" /> {miles || "-"}
+            </span>
+            <span className="flex items-center gap-1 text-slate-500 text-xs">
+              <MdOutlineLocalPhone icon="fa-solid fa-scale-unbalanced-flip" /> {data?.driver?.phone || "-"}
+            </span>
+          </div>
+        </div>
+        <div className="">
+          <button
+            type="button"
+            onClick={() => assignLoad(data)}
+            className="btn bg-gradients text-white font-semibold !text-sm "
+          >
+            Assign Load
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default DriverCard;
+export default DriverCardNew;
