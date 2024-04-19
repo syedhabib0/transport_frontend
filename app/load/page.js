@@ -48,18 +48,21 @@ const Load = () => {
   const deleteLoad = async (id) => {
     try {
       setLoads((prev) => prev.filter((item) => item.id !== id));
-      const {data,status} = await axios.delete(`${apis.loads}/${id}`,{headers:{Authorization:`Bearer ${access_token}`}})
+      const { data, status } = await axios.delete(`${apis.loads}/${id}`, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
       if (status === 200) {
-        toast.success(data.message)
+        toast.success(data.message);
       }
-    } catch (error) { 
+    } catch (error) {
       handleError(error);
     }
   };
   // Function to handle form field changes
-  // const editLoad = (id) => {
-  //   console.log("Editing Item: ", id);
-  // };
+  const editLoad = (id) => {
+    console.log("Editing Item: ", id);
+    router.push(`/load/${id}/edit`);
+  };
   // Function to handle form field changes
   const viewLoad = (id) => {
     router.push(`/load/${id}/view`);
@@ -170,9 +173,9 @@ const Load = () => {
           <button className="primary-color mx-1" onClick={() => viewLoad(load.id)}>
             <FaEye />
           </button>
-          {/* <button className="primary-color mx-1" onClick={() => editLoad(load.id)}>
+          <button className="primary-color mx-1" onClick={() => editLoad(load.id)}>
             <FaEdit />
-          </button> */}
+          </button>
           <button className="primary-color mx-1" onClick={() => deleteLoad(load.id)}>
             <FaTrash />
           </button>
@@ -321,12 +324,6 @@ const Load = () => {
                 <div className="space-x-3">
                   <SubmitButton type="button" className="bg-gradients w-40" onClick={handleShowModal}>
                     New Load
-                  </SubmitButton>
-                  <SubmitButton
-                    type="button"
-                    className="bg-white text-black w-40 border-gradient border-gradient-color"
-                  >
-                    All Load
                   </SubmitButton>
                 </div>
               </div>
