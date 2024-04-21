@@ -51,7 +51,7 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
       const ChatUser = data?.driver?.user;
       const isMessageInserted = insertFirstMessage(ChatUser, " Hey I Need You!", messageTypes.text, user);
       if (isMessageInserted) {
-        router.push("/chat");
+        router.push(`/chat?driver=${ChatUser?.id}`);
       }
     } catch (error) {
       handleError(error);

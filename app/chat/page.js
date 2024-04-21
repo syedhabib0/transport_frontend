@@ -14,9 +14,11 @@ import { useAppSelector } from "@/lib/hooks";
 import moment from "moment";
 import { baseimage } from "@/constants/apis";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 
 const Chat = () => {
   const divRef = useRef();
+  const searchParams = useSearchParams();
   const { user } = useAppSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState({
     chatlist: true,
@@ -38,6 +40,10 @@ const Chat = () => {
         const users = await getUsers(user?.id);
         setUsers(users);
         setSearched(users);
+        if (searchParams.get("driver")) {
+          const active = users.find(user => user.id.toString() === searchParams.get("driver"))
+          setActive(active);
+        }
       } catch (error) {
         handleError(error);
       } finally {
