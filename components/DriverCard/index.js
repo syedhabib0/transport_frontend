@@ -84,7 +84,6 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
           </p>
           <div className="space-x-2">
             <span className="badge text-bg-success">{data?.driver?.status}</span>
-            <span className="badge text-bg-warning">{"-"} Loads</span>
             <span
               onClick={handleChat}
               className="badge text-bg-info cursor-pointer !inline-flex items-center"
@@ -104,17 +103,20 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
                 <GiWeightScale icon="fa-solid fa-scale-unbalanced-flip" /> {data.driver?.vehicles[0].payload_weight} lbs
               </span>
             )}
-
-            <span className="flex items-center gap-1 text-slate-500 text-xs">
-              <CiDeliveryTruck icon="fa-solid fa-scale-unbalanced-flip" /> - * - * - inches
+            {data?.driver?.vehicles && data?.driver?.vehicles?.length > 0 && (
+              <span className="flex items-center gap-1 text-slate-500 text-xs">
+              <CiDeliveryTruck icon="fa-solid fa-scale-unbalanced-flip" /> {data.driver?.vehicles[0].other_details?.height} * {data.driver?.vehicles[0].other_details?.length} * {data.driver?.vehicles[0].other_details?.width} {data.driver?.vehicles[0].other_details?.dimension_in}
             </span>
+            )}
+
+            
           </div>
           <div className="space-x-3 flex flex-wrap ">
             <span className="flex items-center gap-1 text-slate-500 text-xs">
               <FaRoad icon="fa-solid fa-scale-unbalanced-flip" /> {miles || "-"}
             </span>
             <span className="flex items-center gap-1 text-slate-500 text-xs">
-              <MdOutlineLocalPhone icon="fa-solid fa-scale-unbalanced-flip" /> {data?.driver?.phone || "-"}
+              <MdOutlineLocalPhone icon="fa-solid fa-scale-unbalanced-flip" /> {data?.driver?.user?.profile?.phone || "-"}
             </span>
           </div>
         </div>
