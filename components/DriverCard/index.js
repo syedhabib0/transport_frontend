@@ -11,6 +11,7 @@ import { useAppSelector } from "@/lib/hooks";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { handleError, kmToMiles } from "@/utils/functions";
 import { insertFirstMessage, messageTypes } from "@/utils/firebase/chat";
+import { FaLocationDot } from "react-icons/fa6";
 
 const DriverCardNew = ({ data, assignLoad, pickup }) => {
   const router = useRouter();
@@ -100,23 +101,27 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
           <div className="space-x-3 flex flex-wrap ">
             {data?.driver?.vehicles && data?.driver?.vehicles?.length > 0 && (
               <span className="flex items-center gap-1 text-slate-500 text-xs">
-                <GiWeightScale icon="fa-solid fa-scale-unbalanced-flip" /> {data.driver?.vehicles[0].payload_weight} lbs
+                <GiWeightScale icon="fa-solid fa-scale-unbalanced-flip" />{" "}
+                {data.driver?.vehicles[0].payload_weight} lbs
               </span>
             )}
             {data?.driver?.vehicles && data?.driver?.vehicles?.length > 0 && (
               <span className="flex items-center gap-1 text-slate-500 text-xs">
-              <CiDeliveryTruck icon="fa-solid fa-scale-unbalanced-flip" /> {data.driver?.vehicles[0].other_details?.height} * {data.driver?.vehicles[0].other_details?.length} * {data.driver?.vehicles[0].other_details?.width} {data.driver?.vehicles[0].other_details?.dimension_in}
-            </span>
+                <CiDeliveryTruck icon="fa-solid fa-scale-unbalanced-flip" />{" "}
+                {data.driver?.vehicles[0].other_details?.length} *{" "}
+                {data.driver?.vehicles[0].other_details?.width} *{" "}
+                {data.driver?.vehicles[0].other_details?.height}{" "}
+                {data.driver?.vehicles[0].other_details?.dimension_in}
+              </span>
             )}
-
-            
           </div>
           <div className="space-x-3 flex flex-wrap ">
             <span className="flex items-center gap-1 text-slate-500 text-xs">
               <FaRoad icon="fa-solid fa-scale-unbalanced-flip" /> {miles || "-"}
             </span>
             <span className="flex items-center gap-1 text-slate-500 text-xs">
-              <MdOutlineLocalPhone icon="fa-solid fa-scale-unbalanced-flip" /> {data?.driver?.user?.profile?.phone || "-"}
+              <MdOutlineLocalPhone icon="fa-solid fa-scale-unbalanced-flip" />{" "}
+              {data?.driver?.user?.profile?.phone || "-"}
             </span>
           </div>
         </div>
@@ -129,6 +134,14 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
             Assign Load
           </button>
         </div>
+      </div>
+      <hr />
+      <div className="flex px-3 pb-3 pt-1 gap-1">
+        <span className="flex items-center gap-1 text-slate-500 text-xs">
+          <FaLocationDot />
+          {data?.driver?.user?.profile?.country || "-"}, {data?.driver?.user?.profile?.state || "-"},{" "}
+          {data?.driver?.user?.profile?.city || "-"}
+        </span>
       </div>
     </div>
   );

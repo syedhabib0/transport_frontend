@@ -3,14 +3,13 @@ import Breadcrumb from "@/components/Breadcrumb";
 import AppLayout from "@/layouts/AppLayout";
 import Head from "next/head";
 import { Col, Container, FormGroup, Row } from "react-bootstrap";
-import styles from "./style.module.css";
 import SubmitButton from "@/components/submitbutton";
 import Label from "@/components/Label";
 import InputCustom from "@/components/InputCustom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BulkUploadModal from "@/components/Modal/BulkUploadModal";
 import * as Yup from "yup";
 import { ErrorMessage, Field, Formik, Form } from "formik";
@@ -18,12 +17,19 @@ import axios from "axios";
 import apis from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
 import { handleError } from "@/utils/functions";
+import { CitySelect, CountrySelect, StateSelect } from "react-country-state-city";
+import "react-country-state-city/dist/react-country-state-city.css";
+import { toast } from "react-toastify";
 
 const AddDriver = () => {
   const { access_token } = useAppSelector((state) => state.auth);
 
   const [phoneNumber, setPhoneNumber] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [country, setCountry] = useState(0);
+  const [state, setState] = useState(0);
+  const [city, setCity] = useState(0);
 
   const breadcrumbItems = [
     { text: "Dashboard", link: "/dashboard" },
@@ -64,7 +70,9 @@ const AddDriver = () => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await axios.post(apis.bulkDriverCreate, formData,{headers:{Authorization:`Bearer ${access_token}`}});
+      const response = await axios.post(apis.bulkDriverCreate, formData, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
       if (response.status === 200) {
         handleCloseModal();
       }
@@ -74,7 +82,22 @@ const AddDriver = () => {
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    if (!country) {
+      toast.error("Country is Required");
+      return;
+    }
+    if (!state) {
+      toast.error("State is Required");
+      return;
+    }
+    if (!city) {
+      toast.error("City is Required");
+      return;
+    }
     values.phoneNumber = phoneNumber;
+    values.city = city.name;
+    values.state = state.name;
+    values.country = country.name;
     try {
       const response = await axios.post(apis.driversCreate, values, {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -237,6 +260,32 @@ const AddDriver = () => {
                                   }}
                                 />
                               </FormGroup>
+                            </Col>
+                            <Col>
+                              <h6>Country</h6>
+                              <CountrySelect
+                                onChange={(e) => {
+                                  setCountry(e);
+                                }}
+                                placeHolder="Select Country"
+                              />
+                              <h6>State</h6>
+                              <StateSelect
+                                countryid={country.id}
+                                onChange={(e) => {
+                                  setState(e);
+                                }}
+                                placeHolder="Select State"
+                              />
+                              <h6>City</h6>
+                              <CitySelect
+                                countryid={country.id}
+                                stateid={state.id}
+                                onChange={(e) => {
+                                  setCity(e);
+                                }}
+                                placeHolder="Select City"
+                              />
                             </Col>
                             <SubmitButton
                               type="submit"
