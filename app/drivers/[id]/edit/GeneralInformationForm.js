@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 // import { useFormik } from 'formik'
 import axios from "axios";
 import InputCustom from "@/components/InputCustom";
@@ -11,9 +11,19 @@ import { useFormik } from "formik";
 import { handleError } from "@/utils/functions";
 import { baseUrl } from "@/constants/apis";
 import { useAppSelector } from "@/lib/hooks";
+import {
+  CountrySelect,
+  StateSelect,
+  CitySelect,
+  GetCountries,
+  GetCity,
+  GetState,
+} from "react-country-state-city";
+import { toast } from "react-toastify";
 
 const GeneralInformationForm = ({ userId, data }) => {
   const { access_token } = useAppSelector((state) => state.auth);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const imageUrl = data.profileData.profile_photo
     ? data.profileData.profile_photo
     : "/assets/images/default-profile.png";
@@ -21,7 +31,37 @@ const GeneralInformationForm = ({ userId, data }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertMessage, setAlertMessage] = useState(null);
 
+  const [country, setCountry] = useState(null);
+  const [state, setState] = useState(null);
+  const [city, setCity] = useState(null);
 
+  // useEffect(() => {
+  //   const getData = () => {
+  //     GetCountries().then((results) => {
+  //       let find = results.find((item) => item.name === data.profileData.country);
+  //       setCountry(find);
+  //     });
+  //   };
+  //   getData();
+  // }, [data?.profileData?.country]);
+
+  // useEffect(() => {
+  //   if (country?.id) {
+  //     GetState(country.id).then((results) => {
+  //       let find = results.find((item) => item.name === data.profileData.state);
+  //       setState(find);
+  //     });
+  //   }
+  // }, [country?.id, data?.profileData?.state]);
+
+  // useEffect(() => {
+  //   if (country?.id && state?.id) {
+  //     GetCity(country.id, state.id).then((results) => {
+  //       let find = results.find((item) => item.name === data.profileData.city);
+  //       setCity(find)
+  //     });
+  //   }
+  // }, [country?.id,state?.id,data?.profileData?.city]);
 
   const id = userId;
 
@@ -51,6 +91,10 @@ const GeneralInformationForm = ({ userId, data }) => {
     }),
     onSubmit: async (values) => {
       console.log("I am values: ", values);
+
+      values.city = city?.name || data.profileData.city;
+      values.state = state?.name || data.profileData.state;
+      values.country = country?.name || data.profileData.country;
       try {
         setIsSubmitting(true);
         setAlertMessage(null); // Clear any previous alert
@@ -234,6 +278,32 @@ const GeneralInformationForm = ({ userId, data }) => {
             />
             {formik.touched.note && formik.errors.note ? <div>{formik.errors.note}</div> : null}
           </FormGroup>
+        </Col>
+        <Col>
+          <h6>Country</h6>
+          <CountrySelect
+            onChange={(e) => {
+              setCountry(e);
+            }}
+            placeHolder="Select Country"
+          />
+          <h6>State</h6>
+          <StateSelect
+            countryid={country?.id}
+            onChange={(e) => {
+              setState(e);
+            }}
+            placeHolder="Select State"
+          />
+          <h6>City</h6>
+          <CitySelect
+            countryid={country?.id}
+            stateid={state?.id}
+            onChange={(e) => {
+              setCity(e);
+            }}
+            placeHolder="Select City"
+          />
         </Col>
         <SubmitButton className="bg-gradients w-1/4 m-auto" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit"}
