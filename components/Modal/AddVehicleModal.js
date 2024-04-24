@@ -9,16 +9,9 @@ import { trucksFeatures } from "@/constants/data";
 
 const AddVehicleModal = ({ isOpen, onClose, onSubmit, truckTypes }) => {
   const [licensePlate, setLicensePlate] = useState("/assets/images/placeholder.jpg");
-  const [frontImage, setFrontImage] = useState("/assets/images/placeholder.jpg");
-  const [backImage, setBackImage] = useState("/assets/images/placeholder.jpg");
-  const [rightImage, setRightImage] = useState("/assets/images/placeholder.jpg");
-  const [leftImage, setLeftImage] = useState("/assets/images/placeholder.jpg");
-  const [cargoImage, setCargoImage] = useState("/assets/images/placeholder.jpg");
   const initialValues = {
     vehicle_type: "",
     unit_number: "",
-    make: "",
-    model: "",
     payload_weight: "",
     length: "",
     width: "",
@@ -37,18 +30,11 @@ const AddVehicleModal = ({ isOpen, onClose, onSubmit, truckTypes }) => {
     state: "",
     license_expiry: "",
     is_expirable: "",
-    front_image: "",
-    back_image: "",
-    left_image: "",
-    right_image: "",
-    cargo_image: "",
   };
 
   const validationSchema = Yup.object({
     vehicle_type: Yup.string().required("Required"),
     unit_number: Yup.string().required("Required"),
-    make: Yup.string().required("Required"),
-    model: Yup.string().required("Required"),
     payload_weight: Yup.string().required("Required"),
     length: Yup.number().required("Required"),
     width: Yup.number().required("Required"),
@@ -58,12 +44,6 @@ const AddVehicleModal = ({ isOpen, onClose, onSubmit, truckTypes }) => {
     license_plate_image: Yup.mixed().required("Required"),
     state: Yup.string().required("Required"),
     license_expiry: Yup.date().required("Required"),
-    front_image: Yup.mixed().required("Required"),
-    back_image: Yup.mixed().required("Required"),
-    left_image: Yup.mixed().required("Required"),
-    right_image: Yup.mixed().required("Required"),
-    cargo_image: Yup.mixed().required("Required"),
-    // Add validation for other fields
   });
 
   const formik = useFormik({
@@ -73,11 +53,6 @@ const AddVehicleModal = ({ isOpen, onClose, onSubmit, truckTypes }) => {
       await onSubmit(values);
       onClose();
       formik.resetForm();
-      setFrontImage("/assets/images/placeholder.jpg");
-      setBackImage("/assets/images/placeholder.jpg");
-      setLeftImage("/assets/images/placeholder.jpg");
-      setRightImage("/assets/images/placeholder.jpg");
-      setCargoImage("/assets/images/placeholder.jpg");
       setLicensePlate("/assets/images/placeholder.jpg");
     },
   });
@@ -137,38 +112,6 @@ const AddVehicleModal = ({ isOpen, onClose, onSubmit, truckTypes }) => {
                       onBlur={formik.handleBlur}
                       isInvalid={formik.touched.unit_number && !!formik.errors.unit_number}
                       feedbackError={formik.errors.unit_number}
-                      required
-                    />
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label htmlFor="make">Make</Label>
-                    <InputCustom
-                      type="text"
-                      name="make"
-                      id="make"
-                      onChange={formik.handleChange}
-                      value={formik.values.make}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.make && !!formik.errors.make}
-                      feedbackError={formik.errors.make}
-                      required
-                    />
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label htmlFor="model">Model</Label>
-                    <InputCustom
-                      type="text"
-                      name="model"
-                      id="model"
-                      onChange={formik.handleChange}
-                      value={formik.values.model}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.model && !!formik.errors.model}
-                      feedbackError={formik.errors.model}
                       required
                     />
                   </FormGroup>
@@ -431,134 +374,6 @@ const AddVehicleModal = ({ isOpen, onClose, onSubmit, truckTypes }) => {
                       onBlur={formik.handleBlur}
                       isInvalid={formik.touched.is_expirable && !!formik.errors.is_expirable}
                       feedbackError={formik.errors.is_expirable}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-              <h4 className="text-xl">Pictures of the Vehicle</h4>
-              <Row>
-                <Col md={6}>
-                  <Image
-                    src={frontImage}
-                    height={80}
-                    width={80}
-                    alt="Front Image"
-                    className="px-2 py-1 rounded-full"
-                  />
-                  <FormGroup>
-                    <Label htmlFor="front_image">Front Image</Label>
-                    <InputCustom
-                      type="file"
-                      className="form-text"
-                      name="front_image"
-                      id="front_image"
-                      isInvalid={formik.touched.front_image && !!formik.errors.front_image}
-                      feedbackError={formik.errors.front_image}
-                      onChange={(event) => {
-                        // Set the file in Formik state
-                        formik.setFieldValue("front_image", event.currentTarget.files[0]);
-                        setFrontImage(URL.createObjectURL(event.currentTarget.files[0]));
-                      }}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <Image
-                    src={backImage}
-                    height={80}
-                    width={80}
-                    alt="Back Image"
-                    className="px-2 py-1 rounded-full"
-                  />
-                  <FormGroup>
-                    <Label htmlFor="back_image">Back Image</Label>
-                    <InputCustom
-                      type="file"
-                      className="form-text"
-                      name="back_image"
-                      id="back_image"
-                      isInvalid={formik.touched.back_image && !!formik.errors.back_image}
-                      feedbackError={formik.errors.back_image}
-                      onChange={(event) => {
-                        // Set the file in Formik state
-                        formik.setFieldValue("back_image", event.currentTarget.files[0]);
-                        setBackImage(URL.createObjectURL(event.currentTarget.files[0]));
-                      }}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <Image
-                    src={leftImage}
-                    height={80}
-                    width={80}
-                    alt="Left Image"
-                    className="px-2 py-1 rounded-full"
-                  />
-                  <FormGroup>
-                    <Label htmlFor="left_image">Left Image</Label>
-                    <InputCustom
-                      type="file"
-                      className="form-text"
-                      name="left_image"
-                      id="left_image"
-                      isInvalid={formik.touched.left_image && !!formik.errors.left_image}
-                      feedbackError={formik.errors.left_image}
-                      onChange={(event) => {
-                        // Set the file in Formik state
-                        formik.setFieldValue("left_image", event.currentTarget.files[0]);
-                        setLeftImage(URL.createObjectURL(event.currentTarget.files[0]));
-                      }}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <Image
-                    src={rightImage}
-                    height={80}
-                    width={80}
-                    alt="Right Image"
-                    className="px-2 py-1 rounded-full"
-                  />
-                  <FormGroup>
-                    <Label htmlFor="right_image">Right Image</Label>
-                    <InputCustom
-                      type="file"
-                      className="form-text"
-                      name="right_image"
-                      id="right_image"
-                      isInvalid={formik.touched.right_image && !!formik.errors.right_image}
-                      feedbackError={formik.errors.right_image}
-                      onChange={(event) => {
-                        // Set the file in Formik state
-                        formik.setFieldValue("right_image", event.currentTarget.files[0]);
-                        setRightImage(URL.createObjectURL(event.currentTarget.files[0]));
-                      }}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <Image
-                    src={cargoImage}
-                    height={80}
-                    width={80}
-                    alt="Cargo Image"
-                    className="px-2 py-1 rounded-full"
-                  />
-                  <FormGroup>
-                    <Label htmlFor="cargo_image">Cargo Image</Label>
-                    <InputCustom
-                      type="file"
-                      className="form-text"
-                      name="cargo_image"
-                      id="cargo_image"
-                      isInvalid={formik.touched.cargo_image && !!formik.errors.cargo_image}
-                      feedbackError={formik.errors.cargo_image}
-                      onChange={(event) => {
-                        // Set the file in Formik state
-                        formik.setFieldValue("cargo_image", event.currentTarget.files[0]);
-                        setCargoImage(URL.createObjectURL(event.currentTarget.files[0]));
-                      }}
                     />
                   </FormGroup>
                 </Col>
