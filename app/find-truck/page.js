@@ -3,10 +3,10 @@ import Breadcrumb from "@/components/Breadcrumb";
 import InputCustom from "@/components/InputCustom";
 import AppLayout from "@/layouts/AppLayout";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import Select from "react-select";
-import { APIProvider, Map, Marker, AdvancedMarker } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, Marker, useMap, AdvancedMarker } from "@vis.gl/react-google-maps";
 import { useLoadScript } from "@react-google-maps/api";
 
 import { handleError } from "@/utils/functions";
