@@ -12,6 +12,7 @@ import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { handleError, kmToMiles } from "@/utils/functions";
 import { insertFirstMessage, messageTypes } from "@/utils/firebase/chat";
 import { FaLocationDot } from "react-icons/fa6";
+import axios from "axios";
 
 const DriverCardNew = ({ data, assignLoad, pickup }) => {
   const router = useRouter();
@@ -19,7 +20,7 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
   const routesLibrary = useMapsLibrary("routes");
   const [directionService, setDirectionService] = useState();
   const [miles, setMiles] = useState("");
-
+  const [address, setAddress] = useState("");
   useEffect(() => {
     if (!routesLibrary) return;
     setDirectionService(new routesLibrary.DirectionsService());
@@ -46,6 +47,24 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
         console.error("Error fetching route:", error);
       });
   }, [data?.latitude, data?.longitude, directionService, pickup]);
+
+
+  useEffect(() => {
+    const getAddress = async () => {
+      try {
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.latitude},${data.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}`;
+        const response = await axios.get(url);
+
+        if (response.status === 200) {
+          const address = response.data.results[0].formatted_address;
+          setAddress(address);
+        }
+      } catch (error) {
+        handleError(error);
+      }
+    };
+    getAddress()
+  }, [data.latitude, data.longitude, data.results]);
 
   const handleChat = () => {
     try {
@@ -139,8 +158,9 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
       <div className="flex px-3 pb-3 pt-1 gap-1">
         <span className="flex items-center gap-1 text-slate-500 text-xs">
           <FaLocationDot />
-          {data?.driver?.user?.profile?.country || "-"}, {data?.driver?.user?.profile?.state || "-"},{" "}
-          {data?.driver?.user?.profile?.city || "-"}
+          {address}
+          {/* {data?.driver?.user?.profile?.country || "-"}, {data?.driver?.user?.profile?.state || "-"},{" "}
+          {data?.driver?.user?.profile?.city || "-"} */}
         </span>
       </div>
     </div>

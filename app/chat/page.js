@@ -226,7 +226,7 @@ const Chat = () => {
                 ref={divRef}
                 className="flex flex-col space-y-5 bg-white border-gradient border-gradient-color max-h-screen overflow-y-scroll h-auto p-3"
               >
-                {Object.keys(active).length > 0 ? (
+                {active && Object.keys(active).length > 0 ? (
                   <div className="flex flex-col justify-content-between space-y-1">
                     <h2 className="text-xl font-bold username">{active.name}</h2>
                     <hr className="hr-primary" />
