@@ -48,7 +48,6 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
       });
   }, [data?.latitude, data?.longitude, directionService, pickup]);
 
-
   useEffect(() => {
     const getAddress = async () => {
       try {
@@ -63,7 +62,7 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
         handleError(error);
       }
     };
-    getAddress()
+    getAddress();
   }, [data.latitude, data.longitude, data.results]);
 
   const handleChat = () => {
@@ -156,12 +155,16 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
       </div>
       <hr />
       <div className="flex px-3 pb-3 pt-1 gap-1">
-        <span className="flex items-center gap-1 text-slate-500 text-xs">
-          <FaLocationDot />
+        <a
+          href={`https://maps.google.com/?q=${address}`}
+          target="_blank"
+          className="flex items-center gap-1 !text-blue-600 text-xs truncate"
+        >
+          <FaLocationDot className="flex-none" />
           {address}
           {/* {data?.driver?.user?.profile?.country || "-"}, {data?.driver?.user?.profile?.state || "-"},{" "}
           {data?.driver?.user?.profile?.city || "-"} */}
-        </span>
+        </a>
       </div>
     </div>
   );
