@@ -162,8 +162,6 @@ const DriverCardNew = ({ data, assignLoad, pickup }) => {
         >
           <FaLocationDot className="flex-none" />
           {address}
-          {/* {data?.driver?.user?.profile?.country || "-"}, {data?.driver?.user?.profile?.state || "-"},{" "}
-          {data?.driver?.user?.profile?.city || "-"} */}
         </a>
       </div>
     </div>
