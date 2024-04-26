@@ -66,53 +66,14 @@ export default function Home() {
   return (
     <main>
       <Container fluid className="h-screen">
-        <Row className="h-100">
-          {/* Left Half Section */}
-          <Col
-            lg="6"
-            className="p-8"
-            style={{
-              background: "var(--gradient-top-to-bottom-left)",
-            }}
-          >
-            <div className="h-full flex flex-col justify-center items-center">
-              <Card className=" p-14 bg-opacity-10 !bg-pink-400 border-transparent max-w-[60%] min-h-[60%]">
-                <CardBody>
-                  <h5 className="text-white text-md font-bold mb-4">All Digital</h5>
-                  <h1 className="text-white fs-md-1 display-6 font-bold mb-4">
-                    Platforms in one Go{" "}
-                    <span className="text-white pl-2">
-                      <FontAwesomeIcon icon={faPlay} />
-                    </span>
-                  </h1>
-                  <p className="text-white text-left">
-                    The customer service solution that helps you delivery peachy experience across all
-                    touchpoints, at once.
-                  </p>
-                </CardBody>
-              </Card>
-            </div>
-          </Col>
-          {/* Right Half Section */}
-          <Col lg="6" className="bg-white p-8 flex justify-center flex-col">
-            {/* Top Right Corner */}
-            <div className="text-right mb-4">
-              <p>
-                Dont have an account?{" "}
-                <span className="primary-color">
-                  <Link href="/register">Sign Up</Link>
-                </span>
-              </p>
-            </div>
+        <Row className="h-100 justify-center items-center" >
 
-            {/* Session Status */}
-            {/* <AuthSessionStatus className="mb-4" status={status} /> */}
+          <Col lg="4" md="4" sm="4"  className="bg-white p-8 flex rounded-md justify-center flex-col h-max">
 
-            {/* Middle Container */}
             <div className="flex flex-col items-center w-3/4 m-auto">
               <ApplicationLogo
                 logo="dark"
-                className="w-28 h-20 !fill-current !text-gray-500 mb-4 bg-gray-300"
+                className="w-28 h-20   mb-4"
                 style={{
                   maxWidth: "100px",
                   maxHeight: "100px",
@@ -166,14 +127,6 @@ export default function Home() {
                   </Link>
 
                   <SubmitButton className="mt-3 bg-gradients">Login Now</SubmitButton>
-                  <div className="text-center italic mt-4">
-                    <p>
-                      Dont have an account?{" "}
-                      <span className="primary-color">
-                        <Link href="/register">Sign Up</Link>
-                      </span>
-                    </p>
-                  </div>
                 </div>
               </Form>
             </div>

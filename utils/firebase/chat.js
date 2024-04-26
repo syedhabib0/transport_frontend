@@ -64,10 +64,10 @@ export async function insertFirstMessage(chatUser, message, type, user) {
     const data = {
       toId: chatUser.id.toString(),
       msg: message.toString(),
-      read: Date.now(),
+      read: Date.now().toString(),
       type: type.toString(),
       fromId: user.id.toString(),
-      sent: Date.now(),
+      sent: Date.now().toString(),
     };
 
     const isUserExists = await CheckChatExists(chatUser.email, user);
@@ -113,10 +113,10 @@ export async function insertMessage(chatUser, message, type, user) {
     const data = {
       toId: chatUser.id.toString(),
       msg: message.toString(),
-      read: Date.now(),
+      read: Date.now().toString(),
       type: type.toString(),
       fromId: user.id.toString(),
-      sent: Date.now(),
+      sent: Date.now().toString(),
     };
 
     const messagesRef = collection(firestore, `chats/${user.id}_${chatUser.id}/messages`);

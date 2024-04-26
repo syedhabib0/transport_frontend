@@ -106,7 +106,7 @@ const Sidebar = ({ onToggleSidebar }) => {
             {/* App Logo with App Name */}
             <Nav.Item className="py-4 px-1">
               <Link href="/dashboard">
-                <ApplicationLogo logo="dark" className="w-14 h-10 fill-current text-gray-500" />
+                <ApplicationLogo  className="w-14 h-10 fill-current text-gray-500" />
 
                 {/* <span className="app-logo">Your App Logo</span>
             <span className="app-name">Your App Name</span> */}

@@ -1,4 +1,4 @@
-import darkLogo from "@/public/assets/images/logo_white.png"
+import darkLogo from "@/public/assets/images/logo_dark.png"
 import logo from "@/public/assets/images/logo_light.png"
 import Image from 'next/image'
 
