@@ -65,11 +65,9 @@ export default function Home() {
 
   return (
     <main>
-      <Container fluid className="h-screen">
-        <Row className="h-100 justify-center items-center" >
-
-          <Col lg="4" md="4" sm="4"  className="bg-white p-8 flex rounded-md justify-center flex-col h-max">
-
+      <Container fluid className="h-screen bg-gradients">
+        <Row className="h-100 justify-center items-center">
+          <Col lg="4" md="4" sm="4" className="bg-white p-8 flex rounded-md justify-center flex-col h-max">
             <div className="flex flex-col items-center w-3/4 m-auto">
               <ApplicationLogo
                 logo="dark"
@@ -79,7 +77,7 @@ export default function Home() {
                   maxHeight: "100px",
                 }}
               />
-
+              <p className="font-semibold">Welcome To IWS Member.</p>
               <Form className="w-full" onSubmit={submitForm}>
                 <Form.Group>
                   <Input
