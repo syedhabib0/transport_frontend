@@ -77,7 +77,7 @@ export default function Home() {
                   maxHeight: "100px",
                 }}
               />
-              <p className="font-semibold">Welcome To IWS Member.</p>
+              <p className="font-semibold">We will get to you in an instant!</p>
               <Form className="w-full" onSubmit={submitForm}>
                 <Form.Group>
                   <Input
